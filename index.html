@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Curso Git</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="toggleDarkModeBtn">Toggle Dark Mode</button>
+    <div class="container">
+        <h1>Mi Lista de Tareas</h1>
+        <div class="input-container">
+            <input type="text" id="taskInput" placeholder="¿Qué necesitas hacer?">
+            <button id="addTaskBtn">Añadir</button>
+        </div>
+        <ul id="taskList">
+            <!-- Las tareas aparecerán aquí -->
+        </ul>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="active">Activas</button>
+            <button class="filter-btn" data-filter="completed">Completadas</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
