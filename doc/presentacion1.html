@@ -1,0 +1,3007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Git - Día 1: Fundamentos + Práctica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .slide-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #444;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .code-inline {
+            background: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        .highlight-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .practice-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .practice-box h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .theory-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .theory-box h3 {
+            color: #1565c0;
+            margin-top: 0;
+        }
+
+        .instructor-demo {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .instructor-demo h3 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+
+        .student-exercise {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .student-exercise h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #667eea;
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .git-flow-diagram {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            text-align: center;
+            white-space: pre; /* Mantener formato de pre */
+        }
+
+        .status-check {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .keyboard-shortcut {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .navigation {
+                bottom: 15px;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="slide-counter" id="slideCounter">1 / 32</div>
+        
+        <!-- Slide 1: Bienvenida -->
+        <div class="slide active">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 1</div>
+                <h1>Control de Versiones con Git</h1>
+                <h2>Fundamentos + Práctica Intercalada</h2>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> Objetivos del curso:</h3>
+                <ul>
+                    <li>Dominar Git desde cero hasta nivel intermedio</li>
+                    <li>Aprender a colaborar en proyectos reales usando GitHub</li>
+                    <li>Trabajar con Issues, Pull Requests y flujos de trabajo profesionales</li>
+                    <li>Desarrollar una aplicación Todo colaborativamente</li>
+                </ul>
+            </div>
+
+            <h3><span class="emoji">🚀</span> ¿Qué vamos a construir?</h3>
+            <p>Una aplicación Todo List usando HTML, CSS y JavaScript puro, donde cada funcionalidad será desarrollada por diferentes personas siguiendo un flujo de trabajo profesional.</p>
+
+            <h3><span class="emoji">📚</span> Metodología:</h3>
+            <ul>
+                <li><strong>Teoría + Práctica intercaladas</strong></li>
+                <li><strong>Desarrollo en vivo del instructor</strong></li>
+                <li><strong>Ejercicios prácticos de los alumnos</strong></li>
+                <li><strong>Colaboración real en GitHub</strong></li>
+            </ul>
+
+            <h3><span class="emoji">⏰</span> Estructura del día:</h3>
+            <ul>
+                <li><strong>Conceptos fundamentales</strong> → <strong>Práctica con la Todo App</strong></li>
+                <li><strong>Git básico</strong> → <strong>Desarrollo colaborativo</strong></li>
+                <li><strong>GitHub workflow</strong> → <strong>Proyecto real</strong></li>
+            </ul>
+        </div>
+
+        <!-- Slide 2: Problema sin Git -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 2</div>
+                <h1>¿Qué es el Control de Versiones?</h1>
+                <h2>El Problema Sin Control de Versiones</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">📁</span> Escenario típico sin Git:</h3>
+                <div class="code-block">
+proyecto_final.docx
+proyecto_final_v2.docx
+proyecto_final_v2_definitivo.docx
+proyecto_final_v2_definitivo_AHORA_SI.docx
+proyecto_final_v2_definitivo_AHORA_SI_corregido.docx
+                </div>
+            </div>
+
+            <h3><span class="emoji">⚠️</span> Problemas comunes:</h3>
+            <ul>
+                <li>¿Cuál es la versión actual?</li>
+                <li>¿Qué cambió entre versiones?</li>
+                <li>¿Cómo colaborar sin pisarse?</li>
+                <li>¿Cómo volver a una versión anterior?</li>
+                <li>¿Quién hizo qué cambio y cuándo?</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">💡</span> ¿Qué es el control de versiones?</h3>
+                <p>Un sistema que registra los cambios realizados en archivos a lo largo del tiempo, permitiendo recuperar versiones específicas cuando sea necesario.</p>
+            </div>
+
+            <h3><span class="emoji">🎯</span> En nuestro proyecto Todo App:</h3>
+            <ul>
+                <li>Cada nueva funcionalidad será una "versión"</li>
+                <li>Podremos ver quién añadió cada feature</li>
+                <li>Voltear atrás si algo se rompe</li>
+                <li>Trabajar múltiples personas sin conflictos</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Práctica - Simulación sin Git -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 3</div>
+                <h1>PRÁCTICA - Viendo el Problema Sin Git</h1>
+                <h2>Simulación del Caos Sin Control de Versiones</h2>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+                <p><strong>Lo que haré (ustedes solo observan):</strong></p>
+                <div class="code-block">
+# Crear directorio sin Git
+mkdir todo-sin-git
+cd todo-sin-git
+
+# Crear primera versión
+echo "&lt;h1&gt;Mi Todo App&lt;/h1&gt;" &gt; index.html
+cp index.html index_v1.html
+
+# "Mejorar" la aplicación
+echo "&lt;h1&gt;Mi Todo App&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;Tarea 1&lt;/li&gt;&lt;/ul&gt;" &gt; index.html
+cp index.html index_v2.html
+
+# "Otro desarrollador" hace cambios
+echo "&lt;h1&gt;Mi Super Todo App&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;Tarea 1&lt;/li&gt;&lt;/ul&gt;" &gt; index.html
+cp index.html index_v3_juan.html
+
+# Más cambios...
+echo "&lt;h1&gt;Mi Super Todo App&lt;/h1&gt;&lt;ul&gt;&lt;li&gt;Nueva tarea&lt;/li&gt;&lt;/ul&gt;" &gt; index.html
+cp index.html index_v3_maria.html
+                </div>
+            </div>
+
+            <h3><span class="emoji">📋</span> Resultado:</h3>
+            <div class="code-block">
+ls -la
+# index.html
+# index_v1.html
+# index_v2.html
+# index_v3_juan.html
+# index_v3_maria.html
+            </div>
+
+            <h3><span class="emoji">❌</span> Problemas evidentes:</h3>
+            <ul>
+                <li>No sabemos cuál es la versión actual</li>
+                <li>No sabemos qué cambió entre versiones</li>
+                <li>Conflictos entre Juan y María</li>
+                <li>¿Cómo combinamos los cambios?</li>
+            </ul>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">✏️</span> Ejercicio para alumnos:</h3>
+                <div class="code-block">
+# Crear su propio directorio de ejemplo
+mkdir mi-proyecto-sin-git
+cd mi-proyecto-sin-git
+# Crear 3 versiones de un archivo simple
+echo "Versión 1" > archivo.txt
+cp archivo.txt archivo_v1.txt
+# ... repetir proceso
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Por qué Git -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 4</div>
+                <h1>¿Por Qué Git?</h1>
+                <h2>Ventajas de Git sobre Otras Soluciones</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🌐</span> Git es distribuido:</h3>
+                <ul>
+                    <li>Cada desarrollador tiene una copia completa del historial</li>
+                    <li>No depende de un servidor central</li>
+                    <li>Funciona offline</li>
+                </ul>
+
+                <h3><span class="emoji">⚡</span> Git es rápido:</h3>
+                <ul>
+                    <li>Operaciones locales son instantáneas</li>
+                    <li>Branching y merging son operaciones ligeras</li>
+                    <li>Optimizado para proyectos grandes</li>
+                </ul>
+
+                <h3><span class="emoji">🔒</span> Git es seguro:</h3>
+                <ul>
+                    <li>Integridad garantizada con checksums SHA-1</li>
+                    <li>Es prácticamente imposible perder datos</li>
+                    <li>Historial inmutable</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> En nuestra Todo App esto significa:</h3>
+                <ul>
+                    <li>Cada estudiante tendrá todo el historial completo</li>
+                    <li>Podremos trabajar offline en casa</li>
+                    <li>Los cambios serán seguros e íntegros</li>
+                    <li>Operaciones rápidas incluso con muchos cambios</li>
+                </ul>
+            </div>
+
+            <h3><span class="emoji">⚖️</span> Comparación:</h3>
+            <ul>
+                <li><span class="status-error">Sin Git:</span> Caos, pérdida de datos, conflictos</li>
+                <li><span class="status-check">Con Git:</span> Orden, historial completo, colaboración fluida</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: Práctica - Instalación -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 5</div>
+                <h1>PRÁCTICA - Instalación y Configuración</h1>
+                <h2>Preparando Nuestro Entorno de Trabajo</h2>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">✅</span> Verificación de instalación (alumnos):</h3>
+                <div class="code-block">
+git --version
+# Debe mostrar versión 2.x o superior
+                </div>
+
+                <h3><span class="emoji">📥</span> Si no está instalado:</h3>
+                <ul>
+                    <li><strong>Windows:</strong> Descargar de git-scm.com</li>
+                    <li><strong>macOS:</strong> <span class="code-inline">brew install git</span> o Xcode Command Line Tools</li>
+                    <li><strong>Linux:</strong> <span class="code-inline">sudo apt install git</span> o <span class="code-inline">sudo yum install git</span></li>
+                </ul>
+
+                <h3><span class="emoji">⚙️</span> Configuración obligatoria (alumnos):</h3>
+                <div class="code-block">
+git config --global user.name "Tu Nombre Completo"
+git config --global user.email "tu.email@gmail.com"
+git config --global init.defaultBranch main
+                </div>
+
+                <h3><span class="emoji">🔧</span> Configuraciones recomendadas (alumnos):</h3>
+                <div class="code-block">
+git config --global core.editor "code --wait"
+git config --global pull.rebase false
+git config --global push.default simple
+                </div>
+
+                <h3><span class="emoji">🔍</span> Verificar configuración (alumnos):</h3>
+                <div class="code-block">
+git config --list
+git config user.name
+git config user.email
+                </div>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+                <div class="code-block">
+# Mostrar mi configuración
+git config --list
+
+# Explicar cada configuración importante
+git config --global -l | grep user
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> Resultado esperado:</h3>
+                <ul>
+                    <li><span class="status-check">Git instalado y funcionando</span></li>
+                    <li><span class="status-check">Configuración personal completada</span></li>
+                    <li><span class="status-check">Entorno listo para trabajar</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Conceptos Fundamentales -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 6</div>
+                <h1>Conceptos Fundamentales de Git</h1>
+                <h2>Los Tres Estados y el Flujo Básico</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">📊</span> Los tres estados de Git:</h3>
+
+                <h4>1. Working Directory (Directorio de Trabajo):</h4>
+                <ul>
+                    <li>Archivos en tu disco duro</li>
+                    <li>Versión actual que estás editando</li>
+                    <li>Pueden estar modificados o sin modificar</li>
+                </ul>
+
+                <h4>2. Staging Area (Área de Preparación):</h4>
+                <ul>
+                    <li>Archivo que almacena información sobre lo que va en el próximo commit</li>
+                    <li>También llamado "Index"</li>
+                    <li>Aquí preparas exactamente qué cambios quieres confirmar</li>
+                </ul>
+
+                <h4>3. Git Repository (Repositorio Git):</h4>
+                <ul>
+                    <li>Base de datos donde Git almacena metadatos y objetos</li>
+                    <li>Aquí se guardan todos los commits</li>
+                    <li>El historial completo de tu proyecto</li>
+                </ul>
+            </div>
+
+            <div class="git-flow-diagram">
+                <h3><span class="emoji">🔄</span> Flujo básico:</h3>
+Working Directory  →  Staging Area  →  Git Repository
+      (edit)          (git add)        (git commit)
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> En nuestra Todo App:</h3>
+                <ul>
+                    <li><strong>Working:</strong> Editamos index.html, style.css, script.js</li>
+                    <li><strong>Staging:</strong> Seleccionamos qué cambios van en el próximo commit</li>
+                    <li><strong>Repository:</strong> Guardamos versiones completas de la aplicación</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Práctica - Primer Repositorio -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 7</div>
+                <h1>PRÁCTICA - Creando Nuestro Primer Repositorio</h1>
+                <h2>Iniciando la Todo App con Git</h2>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+                <div class="code-block">
+# Crear directorio del proyecto
+mkdir todo-app-curso
+cd todo-app-curso
+
+# Inicializar repositorio Git
+git init
+# Initialized empty Git repository in .../todo-app-curso/.git/
+
+# Ver qué se creó
+ls -la
+# Debe aparecer directorio .git/
+
+# Ver estado inicial
+git status
+# On branch main
+# No commits yet
+# nothing to commit (create/copy files and use "git add" to track)
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🔍</span> Lo que sucedió:</h3>
+                <ul>
+                    <li>Se creó directorio <span class="code-inline">.git/</span> (nunca tocar manualmente)</li>
+                    <li>Se inicializó la estructura interna de Git</li>
+                    <li>Se creó branch <span class="code-inline">main</span> (pero sin commits aún)</li>
+                    <li>El directorio se convirtió en repositorio Git</li>
+                </ul>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">✏️</span> Ejercicio para alumnos:</h3>
+                <div class="code-block">
+# Crear su propio repositorio de práctica
+mkdir mi-todo-practica
+cd mi-todo-practica
+git init
+git status
+ls -la
+                </div>
+
+                <h3><span class="emoji">✅</span> Verificar que funciona:</h3>
+                <div class="code-block">
+git status
+# Debe mostrar "On branch main" y "No commits yet"
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Práctica - Estructura Base -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 8</div>
+                <h1>PRÁCTICA - Creando la Estructura Base de la Todo App</h1>
+                <h2>Desarrollo en Vivo: Primera Versión</h2>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor (en vivo):</h3>
+                
+                <h4><span class="emoji">📄</span> Crear index.html básico:</h4>
+                <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Todo App - Curso Git&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+        &lt;h1&gt;Mi Lista de Tareas&lt;/h1&gt;
+        &lt;div class="input-container"&gt;
+            &lt;input type="text" id="taskInput" placeholder="¿Qué necesitas hacer?"&gt;
+            &lt;button id="addTaskBtn"&gt;Añadir&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;ul id="taskList"&gt;
+            &lt;!-- Las tareas aparecerán aquí --&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+    &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </div>
+
+                <h4><span class="emoji">👁️</span> Ver estado después de crear archivo:</h4>
+                <div class="code-block">
+git status
+# On branch main
+# No commits yet
+# Untracked files:
+#   index.html
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">📝</span> Explicar estado "Untracked":</h3>
+                <ul>
+                    <li>Git ve el archivo pero no lo está rastreando</li>
+                    <li>Necesitamos decirle a Git que queremos versionarlo</li>
+                    <li>Estado: Working Directory tiene cambios</li>
+                </ul>
+            </div>
+        </div>
+       
+        <!-- Slide 9: Estados de Archivos -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 9</div>
+                <h1>Estados de Archivos en Git</h1>
+                <h2>Entendiendo el Ciclo de Vida</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🔄</span> Estados posibles de archivos:</h3>
+
+                <h4>1. Untracked (No rastreado):</h4>
+                <ul>
+                    <li>Git no conoce el archivo</li>
+                    <li>Archivo nuevo que nunca se ha añadido</li>
+                    <li>Aparece en <span class="code-inline">git status</span> como "Untracked files"</li>
+                </ul>
+
+                <h4>2. Unmodified (Sin modificar):</h4>
+                <ul>
+                    <li>El archivo está en Git y no ha cambiado</li>
+                    <li>No aparece en <span class="code-inline">git status</span> (todo OK)</li>
+                </ul>
+
+                <h4>3. Modified (Modificado):</h4>
+                <ul>
+                    <li>El archivo cambió desde el último commit</li>
+                    <li>Aparece como "Changes not staged for commit"</li>
+                </ul>
+
+                <h4>4. Staged (Preparado):</h4>
+                <ul>
+                    <li>El archivo está preparado para el próximo commit</li>
+                    <li>Aparece como "Changes to be committed"</li>
+                </ul>
+            </div>
+
+            <div class="git-flow-diagram">
+                <h3><span class="emoji">📊</span> Diagrama de transiciones:</h3>
+Untracked ──(git add)──> Staged
+    │                      │
+    │               (git commit)
+    │                      │
+    │                      ▼
+    └────────────> Unmodified
+                       │
+                  (edit file)
+                       │
+                       ▼
+                   Modified ──(git add)──> Staged
+            </div>
+        </div>
+
+        <!-- Slide 10: git add y git status -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 10</div>
+                <h1>PRÁCTICA - git add y git status</h1>
+                <h2>Preparando Nuestro Primer Commit</h2>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+
+                <h4><span class="emoji">➕</span> Añadir archivo al staging area:</h4>
+                <div class="code-block">
+git add index.html
+git status
+# On branch main
+# No commits yet
+# Changes to be committed:
+#   new file:   index.html
+                </div>
+
+                <p><strong>Estado cambió:</strong></p>
+                <ul>
+                    <li><span class="code-inline">index.html</span> pasó de <strong>Untracked</strong> a <strong>Staged</strong></li>
+                    <li>Está preparado para commit</li>
+                    <li>Color verde en terminal (si tiene colores)</li>
+                </ul>
+
+                <h4><span class="emoji">🎨</span> Crear style.css básico:</h4>
+                <div class="code-block">
+/* style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.input-container {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+#taskInput {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+#addTaskBtn {
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#addTaskBtn:hover {
+    background: #0056b3;
+}
+
+#taskList {
+    list-style: none;
+}
+
+.task-item {
+    padding: 12px;
+    margin: 8px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+                </div>
+
+                <h4><span class="emoji">👁️</span> Ver estado con múltiples archivos:</h4>
+                <div class="code-block">
+git status
+# On branch main
+# No commits yet
+# Changes to be committed:
+#   new file:   index.html
+# Untracked files:
+#   style.css
+                </div>
+
+                <h4><span class="emoji">📦</span> Añadir todos los archivos:</h4>
+                <div class="code-block">
+git add .
+# o específicamente: git add style.css
+
+git status
+# Changes to be committed:
+#   new file:   index.html
+#   new file:   style.css
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Primer Commit -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 11</div>
+                <h1>PRÁCTICA - Nuestro Primer Commit</h1>
+                <h2>Guardando la Primera Versión</h2>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+
+                <h4><span class="emoji">⚙️</span> Crear script.js básico:</h4>
+                <div class="code-block">
+// script.js - Funcionalidad básica para la Todo App
+document.addEventListener('DOMContentLoaded', function() {
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
+
+    // Por ahora solo una función básica
+    function addTask() {
+        const taskText = taskInput.value.trim();
+        
+        if (taskText === '') {
+            alert('Por favor, escribe una tarea');
+            return;
+        }
+
+        // Crear elemento de tarea
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        li.textContent = taskText;
+        
+        // Añadir a la lista
+        taskList.appendChild(li);
+        
+        // Limpiar input
+        taskInput.value = '';
+        taskInput.focus();
+    }
+
+    // Event listeners
+    addTaskBtn.addEventListener('click', addTask);
+    
+    taskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+});
+                </div>
+
+                <h4><span class="emoji">💾</span> Añadir y hacer nuestro primer commit:</h4>
+                <div class="code-block">
+git add script.js
+git status
+# Changes to be committed:
+#   new file:   index.html
+#   new file:   style.css
+#   new file:   script.js
+
+git commit -m "feat: initial Todo App structure with basic functionality"
+                </div>
+
+                <h4><span class="emoji">🎯</span> Ver el resultado:</h4>
+                <div class="code-block">
+git status
+# On branch main
+# nothing to commit, working tree clean
+
+git log
+# commit 1a2b3c4... (HEAD -> main)
+# Author: Instructor &lt;instructor@email.com&gt;
+# Date: ...
+#     feat: initial Todo App structure with basic functionality
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎉</span> ¡Celebrar!</h3>
+                <ul>
+                    <li><span class="status-check">Primer commit exitoso</span></li>
+                    <li><span class="status-check">Base de la aplicación creada</span></li>
+                    <li><span class="status-check">Working directory limpio</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: git log y git diff -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 12</div>
+                <h1>git log y git diff</h1>
+                <h2>Explorando lo que Hemos Creado</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">📜</span> Ver historial detallado:</h3>
+                <div class="code-block">
+git log
+# Muestra información completa del commit
+
+git log --oneline
+# 1a2b3c4 feat: initial Todo App structure with basic functionality
+
+git log --stat
+# Muestra qué archivos cambiaron y estadísticas
+                </div>
+            </div>
+        
+            <div class="practice-box">
+                <h3><span class="emoji">🔄</span> Ver diferencias (después de hacer un cambio):</h3>
+                <div class="code-block">
+# Modificar algo en index.html (añadir un comentario)
+echo "&lt;!-- Comentario de prueba --&gt;" &gt;&gt; index.html
+
+git status
+# modified: index.html
+
+git diff
+# Muestra las diferencias exactas línea por línea
+
+git diff --staged
+# No muestra nada porque no hay nada en staging
+
+git add index.html
+git diff --staged
+# Ahora muestra las diferencias que van al próximo commit
+                </div>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🛠️</span> Comandos útiles de log:</h3>
+                <div class="code-block">
+git log --graph --oneline --all
+git log --since="1 hour ago"
+git log --author="Instructor"
+git log -- index.html  # Solo commits que tocaron este archivo
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: PRÁCTICA - Ejercicio de los Alumnos -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 13</div>
+                <h1>PRÁCTICA - Ejercicio de los Alumnos</h1>
+                <h2>Los Alumnos Crean Su Copia Local</h2>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">🎯</span> Objetivo:</h3>
+                <p>Cada alumno clona y examina el proyecto base.</p>
+        
+                <h3><span class="emoji">👣</span> Pasos a seguir:</h3>
+                
+                <h4>1. Crear cuenta en GitHub (si no tienen):</h4>
+                <ul>
+                    <li>Ir a github.com</li>
+                    <li>Crear cuenta gratuita</li>
+                    <li>Verificar email</li>
+                </ul>
+        
+                <h4>2. Clonar el repositorio base:</h4>
+                <div class="code-block">
+# El instructor habrá subido el repo a GitHub previamente
+git clone https://github.com/instructor/todo-app-curso.git
+cd todo-app-curso
+                </div>
+        
+                <h4>3. Explorar el proyecto:</h4>
+                <div class="code-block">
+git status
+git log --oneline
+git branch
+ls -la
+                </div>
+        
+                <h4>4. Probar la aplicación:</h4>
+                <div class="code-block">
+# Abrir index.html en navegador
+# En Windows: start index.html
+# En macOS: open index.html
+# En Linux: xdg-open index.html
+                </div>
+        
+                <h4>5. Hacer una pequeña modificación personal:</h4>
+                <div class="code-block">
+# Cambiar el título de la página
+# Editar index.html: cambiar "Mi Lista de Tareas" por "Lista de Tareas de [TuNombre]"
+                </div>
+        
+                <h4>6. Ver las diferencias:</h4>
+                <div class="code-block">
+git diff
+git status
+                </div>
+        
+                <p><strong>NO hacer commit aún</strong> - Solo explorar y familiarizarse.</p>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Resultado esperado:</h3>
+                <ul>
+                    <li>Aplicación clonada y funcionando</li>
+                    <li>Familiarización con comandos básicos</li>
+                    <li>Entendimiento del estado actual del proyecto</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Introducción a las Ramas (Branches) -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 14</div>
+                <h1>Introducción a las Ramas (Branches)</h1>
+                <h2>¿Por Qué Necesitamos Ramas?</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🌿</span> ¿Qué es una rama?</h3>
+                <p>Una rama en Git es simplemente un <strong>puntero móvil</strong> a un commit específico. No es una copia de archivos, es solo una referencia.</p>
+        
+                <h3><span class="emoji">🤔</span> Analogía: Ramas como líneas de desarrollo paralelas</h3>
+                <div class="git-flow-diagram">
+main:     A ── B ── C ── D
+               \
+feature:        E ── F
+                </div>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> ¿Por qué usar ramas en nuestra Todo App?</h3>
+                <ul>
+                    <li><strong>Desarrollo paralelo:</strong> Varios estudiantes trabajando simultáneamente</li>
+                    <li><strong>Experimentación segura:</strong> Probar nuevas features sin romper main</li>
+                    <li><strong>Organización:</strong> Cada feature en su propia rama</li>
+                    <li><strong>Code review:</strong> Revisar antes de integrar a main</li>
+                </ul>
+            </div>
+        
+            <h3><span class="emoji">🏷️</span> Ramas típicas en nuestro proyecto:</h3>
+            <ul>
+                <li><span class="code-inline">main</span>: Código estable, siempre funcionando</li>
+                <li><span class="code-inline">feature/add-delete-btn</span>: Para añadir botón eliminar</li>
+                <li><span class="code-inline">feature/complete-tasks</span>: Para marcar tareas completadas</li>
+                <li><span class="code-inline">feature/filter-tasks</span>: Para filtrar por estado</li>
+                <li><span class="code-inline">bugfix/input-validation</span>: Para corregir errores</li>
+            </ul>
+        
+            <h3><span class="emoji">✨</span> Ventajas:</h3>
+            <ul>
+                <li>Crear rama es instantáneo (41 bytes)</li>
+                <li>Cambiar entre ramas es muy rápido</li>
+                <li>Múltiples desarrolladores sin pisarse</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 15: PRÁCTICA - Creando Nuestra Primera Rama -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 15</div>
+                <h1>PRÁCTICA - Creando Nuestra Primera Rama</h1>
+                <h2>Preparando Feature Branch para Delete Button</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+        
+                <h4><span class="emoji">🌿</span> Ver ramas actuales:</h4>
+                <div class="code-block">
+git branch
+# * main
+
+git branch -a
+# * main
+# remotes/origin/main
+                </div>
+        
+                <h4><span class="emoji">➕</span> Crear nueva rama para feature:</h4>
+                <div class="code-block">
+git checkout -b feature/add-delete-button
+# Switched to a new branch 'feature/add-delete-button'
+
+# Comando más moderno equivalente:
+# git switch -c feature/add-delete-button
+                </div>
+        
+                <h4><span class="emoji">✅</span> Verificar cambio:</h4>
+                <div class="code-block">
+git branch
+# * feature/add-delete-button
+#   main
+
+git status
+# On branch feature/add-delete-button
+# nothing to commit, working tree clean
+                </div>
+        
+                <h4><span class="emoji">🤔</span> ¿Qué pasó internamente?</h4>
+                <ul>
+                    <li>Se creó nueva rama apuntando al mismo commit que main</li>
+                    <li>HEAD ahora apunta a la nueva rama</li>
+                    <li>Working directory sigue igual</li>
+                    <li>Preparado para desarrollar nueva funcionalidad</li>
+                </ul>
+        
+                <h4><span class="emoji">💻</span> Desarrollar funcionalidad delete button:</h4>
+                <p>Modificar <span class="code-inline">index.html</span> - añadir botón delete en cada tarea (esto lo haremos programáticamente con JavaScript).</p>
+                
+                <p>Modificar <span class="code-inline">script.js</span> para añadir botón delete:</p>
+                <div class="code-block">
+// Modificar script.js para añadir botón delete
+function addTask() {
+    const taskText = taskInput.value.trim();
+    
+    if (taskText === '') {
+        alert('Por favor, escribe una tarea');
+        return;
+    }
+
+    // Crear elemento de tarea con botón delete
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    
+    const taskSpan = document.createElement('span');
+    taskSpan.textContent = taskText;
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '✕';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.onclick = function() {
+        li.remove();
+    };
+    
+    li.appendChild(taskSpan);
+    li.appendChild(deleteBtn);
+    taskList.appendChild(li);
+    
+    taskInput.value = '';
+    taskInput.focus();
+}
+                </div>
+                <p>Añadir estilos para botón delete en <span class="code-inline">style.css</span>:</p>
+                <div class="code-block">
+/* Añadir estilos para botón delete en style.css */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: PRÁCTICA - Commits en la Rama Feature -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 16</div>
+                <h1>PRÁCTICA - Commits en la Rama Feature</h1>
+                <h2>Desarrollando la Funcionalidad Step by Step</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor - commits incrementales:</h3>
+        
+                <h4><span class="emoji">💾</span> Commit 1: Modificar HTML structure (si hubo cambios directos):</h4>
+                <div class="code-block">
+git add index.html 
+git commit -m "refactor: prepare HTML structure for delete buttons"
+                </div>
+                <p>(Nota: En este caso, el HTML se modifica vía JS, así que este commit podría omitirse o enfocarse en la preparación del JS)</p>
+
+                <h4><span class="emoji">💾</span> Commit 2: Añadir estilos CSS:</h4>
+                <div class="code-block">
+git add style.css
+git commit -m "style: add CSS for delete button and improved task layout"
+                </div>
+        
+                <h4><span class="emoji">💾</span> Commit 3: Implementar funcionalidad JavaScript:</h4>
+                <div class="code-block">
+git add script.js
+git commit -m "feat: add delete functionality to tasks"
+                </div>
+        
+                <h4><span class="emoji">📜</span> Ver el progreso:</h4>
+                <div class="code-block">
+git log --oneline
+# a1b2c3d feat: add delete functionality to tasks
+# e4f5g6h style: add CSS for delete button and improved task layout
+# i7j8k9l refactor: prepare HTML structure for delete buttons
+# 1a2b3c4 feat: initial Todo App structure with basic functionality
+
+git log --oneline --graph
+# * a1b2c3d (HEAD -> feature/add-delete-button) feat: add delete functionality to tasks
+# * e4f5g6h style: add CSS for delete button and improved task layout
+# * i7j8k9l refactor: prepare HTML structure for delete buttons
+# * 1a2b3c4 (main) feat: initial Todo App structure with basic functionality
+                </div>
+        
+                <h4><span class="emoji">🧪</span> Probar la funcionalidad:</h4>
+                <div class="code-block">
+# Abrir index.html en navegador
+# Añadir algunas tareas
+# Verificar que el botón ✕ funciona
+                </div>
+        
+                <h4><span class="emoji">🔄</span> Comparar con main:</h4>
+                <div class="code-block">
+git diff main
+# Muestra todas las diferencias entre nuestra rama y main
+
+git diff main --stat
+# Muestra estadísticas de cambios
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Merge: Integrando Cambios -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 17</div>
+                <h1>Merge: Integrando Cambios</h1>
+                <h2>Fusionando Nuestra Feature con Main</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🔀</span> Tipos de merge:</h3>
+        
+                <h4>1. Fast-Forward Merge:</h4>
+                <ul>
+                    <li>Ocurre cuando <span class="code-inline">main</span> no ha cambiado desde que se creó la rama feature.</li>
+                    <li>Git simplemente mueve el puntero de <span class="code-inline">main</span> hacia adelante al último commit de la feature.</li>
+                    <li>No se crea un commit de merge.</li>
+                </ul>
+        
+                <h4>2. Three-Way Merge (o Merge Commit):</h4>
+                <ul>
+                    <li>Ocurre cuando <span class="code-inline">main</span> tiene nuevos commits desde que se creó la rama feature.</li>
+                    <li>Git crea un nuevo commit que combina los cambios de ambas ramas.</li>
+                    <li>Este commit de merge tiene dos commits padre.</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">📊</span> En nuestro caso (probablemente Fast-Forward):</h3>
+                <div class="git-flow-diagram">
+Antes del merge:
+main:           A ── B
+                     \
+feature:              C ── D ── E  (HEAD -> feature/add-delete-button)
+
+Después del merge (Fast-Forward):
+main:           A ── B ── C ── D ── E  (HEAD -> main, feature/add-delete-button)
+                </div>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">⚙️</span> Proceso de merge (teoría):</h3>
+                <ol>
+                    <li>Cambiar a la rama destino (ej. <span class="code-inline">main</span>).</li>
+                    <li>Ejecutar el comando de merge con la rama feature.</li>
+                    <li>Resolver conflictos si los hay (más sobre esto después).</li>
+                    <li>Confirmar el merge (automático si no hay conflictos o manual si los hubo).</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- Slide 18: PRÁCTICA - Haciendo el Merge -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 18</div>
+                <h1>PRÁCTICA - Haciendo el Merge</h1>
+                <h2>Integrando Delete Button a Main</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+        
+                <h4><span class="emoji">🔄</span> Cambiar a rama main:</h4>
+                <div class="code-block">
+git checkout main
+# Switched to branch 'main'
+
+git status
+# On branch main
+# Your branch is up-to-date with 'origin/main'. (si ya está en GitHub)
+# nothing to commit, working tree clean
+                </div>
+        
+                <h4><span class="emoji">🔍</span> Verificar diferencias antes del merge:</h4>
+                <p>Abrir <span class="code-inline">index.html</span> - NO tiene botón delete. La funcionalidad no está en <span class="code-inline">main</span> aún.</p>
+                <div class="code-block">
+git log --oneline
+# 1a2b3c4 feat: initial Todo App structure with basic functionality
+# (Solo el commit inicial)
+                </div>
+        
+                <h4><span class="emoji">🔗</span> Hacer el merge:</h4>
+                <div class="code-block">
+git merge feature/add-delete-button
+# Updating 1a2b3c4..a1b2c3d
+# Fast-forward
+#  index.html | 0
+#  script.js  | 15 +++++++++++++-- (o similar)
+#  style.css  | 18 ++++++++++++++++++ (o similar)
+#  3 files changed, 32 insertions(+), 3 deletions(-) (los números pueden variar)
+                </div>
+                 <p>(Nota: <span class="code-inline">index.html</span> puede mostrar 0 cambios si las modificaciones fueron solo en JS y CSS para añadir el botón dinámicamente)</p>
+        
+                <h4><span class="emoji">✅</span> Verificar resultado:</h4>
+                <div class="code-block">
+git log --oneline
+# a1b2c3d (HEAD -> main, feature/add-delete-button) feat: add delete functionality to tasks
+# e4f5g6h style: add CSS for delete button and improved task layout
+# i7j8k9l refactor: prepare HTML structure for delete buttons
+# 1a2b3c4 feat: initial Todo App structure with basic functionality
+
+# Probar aplicación - ahora main tiene botón delete
+                </div>
+        
+                <h4><span class="emoji">🗑️</span> Limpiar rama feature (opcional):</h4>
+                <div class="code-block">
+git branch -d feature/add-delete-button
+# Deleted branch feature/add-delete-button (was a1b2c3d).
+
+git branch
+# * main
+                </div>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Estado final:</h3>
+                <ul>
+                    <li>Main tiene la nueva funcionalidad.</li>
+                    <li>Historial limpio con commits descriptivos.</li>
+                    <li>Aplicación funcionando correctamente.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 19: Conflictos de Merge -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 19</div>
+                <h1>Conflictos de Merge</h1>
+                <h2>Cuando Git No Puede Decidir Automáticamente</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">❓</span> ¿Cuándo ocurren conflictos?</h3>
+                <ul>
+                    <li>Cuando se modifican las <strong>mismas líneas</strong> en el <strong>mismo archivo</strong> en ambas ramas.</li>
+                    <li>Cuando un archivo es eliminado en una rama y modificado en otra.</li>
+                    <li>Cuando Git no puede fusionar automáticamente los cambios debido a su complejidad.</li>
+                </ul>
+        
+                <h3><span class="emoji">📝</span> Ejemplo de conflicto típico en un archivo:</h3>
+                <div class="code-block">
+&lt;!-- En tu archivo, por ejemplo, script.js --&gt;
+function addTask() {
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+    // Versión de main (o la rama actual donde estás haciendo el merge)
+    const taskText = taskInput.value.trim();
+=======
+    // Versión de la rama que estás intentando fusionar (feature/new-validation)
+    const text = taskInput.value.trim().toLowerCase();
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/new-validation
+    // ... resto del código
+}
+                </div>
+        
+                <h3><span class="emoji">🚩</span> Marcadores de conflicto:</h3>
+                <ul>
+                    <li><span class="code-inline">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>: Indica el inicio del contenido de la rama actual (donde estás mergeando).</li>
+                    <li><span class="code-inline">=======</span>: Separa las dos versiones conflictivas.</li>
+                    <li><span class="code-inline">&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch-name</span>: Indica el fin del contenido de la otra rama (la que estás trayendo).</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">⚙️</span> Proceso de resolución:</h3>
+                <ol>
+                    <li>Git te informará sobre los archivos en conflicto.</li>
+                    <li>Abre cada archivo conflictivo en tu editor de código.</li>
+                    <li>Busca los marcadores de conflicto (<span class="code-inline">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>, <span class="code-inline">=======</span>, <span class="code-inline">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>).</li>
+                    <li>Edita el archivo para decidir qué contenido mantener:
+                        <ul>
+                            <li>Puedes quedarte con la versión de HEAD.</li>
+                            <li>Puedes quedarte con la versión de la otra rama.</li>
+                            <li>Puedes combinar ambas versiones.</li>
+                            <li>Puedes escribir algo completamente nuevo.</li>
+                        </ul>
+                    </li>
+                    <li>Una vez editado, <strong>elimina los marcadores de conflicto</strong>.</li>
+                    <li>Guarda el archivo.</li>
+                    <li>Haz <span class="code-inline">git add</span> del archivo resuelto para marcarlo como resuelto.</li>
+                    <li>Una vez todos los conflictos estén resueltos y añadidos, haz <span class="code-inline">git commit</span> para completar el merge. Git usualmente te provee un mensaje de commit por defecto para esto.</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- Slide 20: PRÁCTICA - Simulando y Resolviendo Conflictos -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 20</div>
+                <h1>PRÁCTICA - Simulando y Resolviendo Conflictos</h1>
+                <h2>Creando un Conflicto Intencionalmente</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+        
+                <h4><span class="emoji">🌿</span> Crear dos ramas con cambios conflictivos:</h4>
+        
+                <p><strong>Rama 1: Mejorar validación</strong></p>
+                <div class="code-block">
+git checkout -b feature/improve-validation
+
+# Modificar script.js - función addTask
+# function addTask() {
+#     const taskText = taskInput.value.trim();
+    
+#     // Validación mejorada
+#     if (taskText === '' || taskText.length < 3) {
+#         alert('La tarea debe tener al menos 3 caracteres');
+#         return;
+#     }
+    
+#     // ... resto del código igual (con el botón de eliminar ya añadido)
+#     const li = document.createElement('li');
+#     li.className = 'task-item';
+#     // ... (código para añadir span y deleteBtn) ...
+#     taskList.appendChild(li);
+#     taskInput.value = '';
+#     taskInput.focus();
+# }
+
+# (Contenido completo de script.js en esta rama)
+document.addEventListener('DOMContentLoaded', function() {
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
+
+    function addTask() {
+        const taskText = taskInput.value.trim();
+        
+        // Validación mejorada
+        if (taskText === '' || taskText.length < 3) {
+            alert('La tarea debe tener al menos 3 caracteres');
+            return;
+        }
+
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = taskText;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '✕';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = function() {
+            li.remove();
+        };
+        
+        li.appendChild(taskSpan);
+        li.appendChild(deleteBtn);
+        taskList.appendChild(li);
+        
+        taskInput.value = '';
+        taskInput.focus();
+    }
+
+    addTaskBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+});
+
+git add script.js
+git commit -m "feat: improve task validation with minimum length"
+                </div>
+        
+                <p><strong>Volver a main y crear segunda rama:</strong></p>
+                <div class="code-block">
+git checkout main
+
+git checkout -b feature/add-task-counter
+
+# Modificar script.js - MISMA función addTask, pero con diferente cambio
+# y añadir nueva función updateTaskCounter
+# function addTask() {
+#     const taskText = taskInput.value.trim();
+    
+#     if (taskText === '') { // Validación original
+#         alert('Por favor, escribe una tarea');
+#         return;
+#     }
+
+#     // Añadir contador de tareas
+#     updateTaskCounter(); 
+    
+#     // ... resto del código (con el botón de eliminar ya añadido)
+#     const li = document.createElement('li');
+#     // ... (código para añadir span y deleteBtn) ...
+#     taskList.appendChild(li);
+#     taskInput.value = '';
+#     taskInput.focus();
+# }
+
+# function updateTaskCounter() {
+#    const count = document.querySelectorAll('.task-item').length + 1; // Error aquí, debería ser .length antes de añadir
+#    document.title = `Todo App (${count} tareas)`;
+# }
+# (Contenido completo de script.js en esta rama)
+document.addEventListener('DOMContentLoaded', function() {
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
+
+    function updateTaskCounter() {
+        const currentTaskCount = taskList.getElementsByTagName('li').length;
+        document.title = `Todo App (${currentTaskCount} tareas)`;
+    }
+    
+    function addTask() {
+        const taskText = taskInput.value.trim();
+        
+        if (taskText === '') { // Validación original
+            alert('Por favor, escribe una tarea');
+            return;
+        }
+        
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = taskText;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '✕';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = function() {
+            li.remove();
+            updateTaskCounter(); // Actualizar contador al eliminar
+        };
+        
+        li.appendChild(taskSpan);
+        li.appendChild(deleteBtn);
+        taskList.appendChild(li);
+        
+        updateTaskCounter(); // Actualizar contador al añadir
+        
+        taskInput.value = '';
+        taskInput.focus();
+    }
+
+    addTaskBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+    // Inicializar contador al cargar
+    updateTaskCounter();
+});
+
+
+git add script.js
+git commit -m "feat: add task counter in document title"
+                </div>
+        
+                <p><strong>Mergear primera rama (sin conflictos):</strong></p>
+                <div class="code-block">
+git checkout main
+git merge feature/improve-validation
+# Fast-forward merge exitoso (porque main no había cambiado desde que se creó feature/improve-validation)
+                </div>
+        
+                <p><strong>Intentar mergear segunda rama (CON conflictos):</strong></p>
+                <div class="code-block">
+git merge feature/add-task-counter
+# Auto-merging script.js
+# CONFLICT (content): Merge conflict in script.js
+# Automatic merge failed; fix conflicts and then commit the result.
+
+git status
+# On branch main
+# Your branch is ahead of 'origin/main' by X commits. (si main estaba en GitHub)
+# You have unmerged paths.
+#   (fix conflicts and run "git commit")
+# 
+# Unmerged paths:
+#   (use "git add <file>..." to mark resolution)
+#         both modified:   script.js
+                </div>
+        
+                <p><strong>Abrir script.js y ver el conflicto:</strong></p>
+                <div class="code-block">
+// (Fragmento del conflicto en script.js)
+// function addTask() {
+//     const taskText = taskInput.value.trim();
+    
+// &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (main, que ahora tiene los cambios de feature/improve-validation)
+//     // Validación mejorada
+//     if (taskText === '' || taskText.length < 3) {
+//         alert('La tarea debe tener al menos 3 caracteres');
+//         return;
+//     }
+// =======
+//     if (taskText === '') { // Validación original de feature/add-task-counter
+//         alert('Por favor, escribe una tarea');
+//         return;
+//     }
+
+//     // Añadir contador de tareas
+//     updateTaskCounter(); 
+// &gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/add-task-counter
+    
+//     // ... resto del código común (añadir li, span, deleteBtn)...
+// }
+                </div>
+                <p>(El conflicto real será más extenso, mostrando las diferencias en la función `addTask` y potencialmente la aparición de `updateTaskCounter` solo en una versión)</p>
+            </div>
+        </div>
+
+        <!-- Slide 21: PRÁCTICA - Resolviendo el Conflicto (Continuación) -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 21</div>
+                <h1>PRÁCTICA - Resolviendo el Conflicto (Continuación)</h1>
+                <h2>Combinando Ambas Funcionalidades</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+                
+                <h4><span class="emoji">🔧</span> Resolución manual - combinando ambas funcionalidades:</h4>
+                <p>Editaremos <span class="code-inline">script.js</span> para incluir ambas mejoras: la validación de longitud y el contador de tareas. También nos aseguraremos de que la función <span class="code-inline">updateTaskCounter</span> esté presente y se llame correctamente.</p>
+                <div class="code-block">
+// script.js resuelto
+document.addEventListener('DOMContentLoaded', function() {
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
+
+    // Función de la rama feature/add-task-counter
+    function updateTaskCounter() {
+        const currentTaskCount = taskList.getElementsByTagName('li').length;
+        document.title = `Todo App (${currentTaskCount} tareas)`;
+    }
+    
+    function addTask() {
+        const taskText = taskInput.value.trim();
+        
+        // Validación mejorada de la rama feature/improve-validation (main actual)
+        if (taskText === '' || taskText.length < 3) {
+            alert('La tarea debe tener al menos 3 caracteres');
+            return;
+        }
+        // (Ya no necesitamos la validación original que causaba conflicto)
+
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = taskText;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '✕';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = function() {
+            li.remove();
+            updateTaskCounter(); // Asegurar que el contador se actualiza al borrar
+        };
+        
+        li.appendChild(taskSpan);
+        li.appendChild(deleteBtn);
+        taskList.appendChild(li);
+        
+        updateTaskCounter(); // Llamada de la rama feature/add-task-counter
+        
+        taskInput.value = '';
+        taskInput.focus();
+    }
+
+    addTaskBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+    // Inicializar contador al cargar
+    updateTaskCounter();
+});
+                </div>
+        
+                <h4><span class="emoji">✅</span> Completar la resolución:</h4>
+                <div class="code-block">
+git add script.js
+git status
+# On branch main
+# All conflicts fixed but you are still merging.
+#   (use "git commit" to conclude merge)
+
+git commit 
+# Se abrirá el editor con un mensaje de commit por defecto como:
+# Merge branch 'feature/add-task-counter'
+# 
+# Conflicts:
+#   script.js
+#
+# Puedes dejarlo o modificarlo, por ejemplo:
+# git commit -m "feat: merge validation and counter features, resolving conflicts"
+
+# Si usas el mensaje por defecto y guardas/cierras el editor:
+# [main 123abcd] Merge branch 'feature/add-task-counter' 
+
+git log --oneline --graph
+# *   123abcd (HEAD -> main) Merge branch 'feature/add-task-counter'
+# |\  
+# | * d4e5f6g (feature/add-task-counter) feat: add task counter in document title
+# * | g7h8i9j feat: improve task validation with minimum length
+# |/  
+# * ... (commits anteriores)
+                </div>
+                 <p>(El hash del commit y el gráfico pueden variar ligeramente)</p>
+            </div>
+        </div>
+
+        <!-- Slide 22: Introducción a GitHub -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 22</div>
+                <h1>Introducción a GitHub</h1>
+                <h2>Llevando Nuestro Proyecto a la Nube</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">☁️</span> ¿Qué es GitHub?</h3>
+                <ul>
+                    <li>Plataforma de hosting para repositorios Git.</li>
+                    <li>Facilita la colaboración en proyectos de software.</li>
+                    <li>Ofrece herramientas como Issues (seguimiento de tareas/bugs), Pull Requests (revisión de código), Actions (CI/CD), Projects (gestión de proyectos), y más.</li>
+                    <li>Es una red social para desarrolladores.</li>
+                    <li>Permite el hosting gratuito de sitios estáticos con GitHub Pages.</li>
+                </ul>
+        
+                <h3><span class="emoji">🔧</span> Git vs. GitHub:</h3>
+                <ul>
+                    <li><strong>Git:</strong> Es el sistema de control de versiones distribuido. Es una herramienta que se ejecuta localmente en tu máquina.</li>
+                    <li><strong>GitHub:</strong> Es una plataforma web que aloja repositorios Git. Proporciona una interfaz gráfica y herramientas adicionales sobre Git.</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🛠️</span> Funcionalidades clave que usaremos:</h3>
+                <ul>
+                    <li><strong>Repositories:</strong> Donde se aloja nuestro código y su historial.</li>
+                    <li><strong>Issues:</strong> Para la gestión de tareas, bugs, y propuestas de features.</li>
+                    <li><strong>Pull Requests (PRs):</strong> Para proponer cambios, discutir y revisar código antes de integrarlo a la rama principal.</li>
+                    <li><strong>Projects (Kanban Boards):</strong> Para organizar y visualizar el progreso de las tareas.</li>
+                    <li><strong>Actions (CI/CD):</strong> Para automatizar flujos de trabajo como testing y deployment.</li>
+                </ul>
+            </div>
+        
+            <h3><span class="emoji">🌟</span> Beneficios para nuestro proyecto:</h3>
+            <ul>
+                <li><strong>Colaboración centralizada:</strong> Un lugar único para que todo el equipo trabaje.</li>
+                <li><strong>Backup en la nube:</strong> Nuestro código está seguro incluso si perdemos nuestra copia local.</li>
+                <li><strong>Accesibilidad:</strong> Acceso al proyecto desde cualquier lugar con conexión a internet.</li>
+                <li><strong>Herramientas profesionales:</strong> Uso de flujos de trabajo estándar en la industria.</li>
+                <li><strong>Portfolio:</strong> Una forma de mostrar nuestro trabajo y habilidades.</li>
+            </ul>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🔑</span> Conceptos importantes en el contexto de GitHub:</h3>
+                <ul>
+                    <li><strong>Remote:</strong> Una referencia a un repositorio Git alojado en otro lugar (ej. en GitHub). El nombre común para el remote principal es <span class="code-inline">origin</span>.</li>
+                    <li><strong>Clone:</strong> Crear una copia local completa de un repositorio remoto.</li>
+                    <li><strong>Push:</strong> Enviar commits locales a un repositorio remoto.</li>
+                    <li><strong>Pull:</strong> Obtener y fusionar cambios desde un repositorio remoto a tu copia local.</li>
+                    <li><strong>Fork:</strong> Crear una copia de un repositorio (que no te pertenece) en tu propia cuenta de GitHub. Útil para proponer cambios a proyectos open source.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 23: PRÁCTICA - Subiendo Nuestro Proyecto a GitHub -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 23</div>
+                <h1>PRÁCTICA - Subiendo Nuestro Proyecto a GitHub</h1>
+                <h2>Del Repositorio Local al Remoto</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor:</h3>
+        
+                <h4><span class="emoji">🆕</span> 1. Crear repositorio en GitHub:</h4>
+                <ul>
+                    <li>Ir a <a href="https://github.com" target="_blank">github.com</a> y acceder.</li>
+                    <li>Clic en el botón "+" en la esquina superior derecha, luego "New repository".</li>
+                    <li><strong>Repository name:</strong> <span class="code-inline">todo-app-curso</span> (o similar).</li>
+                    <li><strong>Description:</strong> "Todo App para curso de Git - Desarrollo colaborativo".</li>
+                    <li>Seleccionar <strong>Public</strong>.</li>
+                    <li><strong>NO</strong> marcar "Initialize this repository with a README" (ya tenemos un proyecto local).</li>
+                    <li>Clic en "Create repository".</li>
+                </ul>
+                <p>GitHub mostrará instrucciones para conectar un repositorio existente. Usaremos esas.</p>
+        
+                <h4><span class="emoji">🔗</span> 2. Conectar repositorio local con GitHub:</h4>
+                <div class="code-block">
+# En la terminal, dentro de tu directorio local todo-app-curso
+
+# Verificar remotos actuales (debería estar vacío)
+git remote -v
+
+# Añadir el remote 'origin' apuntando a tu nuevo repo en GitHub
+# Reemplaza 'instructor' con tu nombre de usuario de GitHub
+git remote add origin https://github.com/INSTRUCTOR_USERNAME/todo-app-curso.git
+
+# Verificar que el remote se añadió correctamente
+git remote -v
+# Debería mostrar:
+# origin  https://github.com/INSTRUCTOR_USERNAME/todo-app-curso.git (fetch)
+# origin  https://github.com/INSTRUCTOR_USERNAME/todo-app-curso.git (push)
+                </div>
+        
+                <h4><span class="emoji">📤</span> 3. Subir código a GitHub:</h4>
+                <div class="code-block">
+# Primera subida a la rama 'main' del remote 'origin'
+# La opción -u establece la rama remota para hacer tracking
+git push -u origin main
+
+# Output esperado (puede variar):
+# Enumerating objects: XX, done.
+# Counting objects: 100% (XX/XX), done.
+# Delta compression using up to Y threads
+# Compressing objects: 100% (Z/Z), done.
+# Writing objects: 100% (XX/XX), X.YZ KiB | X.YZ MiB/s, done.
+# Total XX (delta W), reused 0 (delta 0), pack-reused 0
+# To https://github.com/INSTRUCTOR_USERNAME/todo-app-curso.git
+#  * [new branch]      main -> main
+# Branch 'main' set up to track remote branch 'main' from 'origin'.
+                </div>
+        
+                <h4><span class="emoji">✅</span> 4. Verificar en GitHub:</h4>
+                <ul>
+                    <li>Refrescar la página del repositorio en GitHub.</li>
+                    <li>Deberías ver tus archivos: <span class="code-inline">index.html</span>, <span class="code-inline">style.css</span>, <span class="code-inline">script.js</span>.</li>
+                    <li>Explorar la pestaña "Commits" para ver el historial.</li>
+                </ul>
+        
+                <h4><span class="emoji">💡</span> 5. Comandos útiles con remotos (después del primer push -u):</h4>
+                <div class="code-block">
+git remote show origin  # Muestra información detallada del remote 'origin'
+git push                # Ahora Git sabe a dónde enviar 'main' por defecto
+git status              # Mostrará si tu rama local está sincronizada con 'origin/main'
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: GitHub Issues - Sistema de Gestión de Tareas -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 24</div>
+                <h1>GitHub Issues - Sistema de Gestión de Tareas</h1>
+                <h2>Organizando el Trabajo del Equipo</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🎫</span> ¿Qué son las GitHub Issues?</h3>
+                <ul>
+                    <li>Un sistema integrado en GitHub para el seguimiento de tareas, errores (bugs), propuestas de mejoras (features), y otras discusiones relacionadas con el proyecto.</li>
+                    <li>Cada issue tiene un número único (ej. <span class="code-inline">#1</span>, <span class="code-inline">#2</span>) que facilita su referencia.</li>
+                    <li>Permiten la discusión, asignación de responsables, y el seguimiento del progreso de cada elemento de trabajo.</li>
+                    <li>Se pueden referenciar y cerrar automáticamente desde commits y Pull Requests.</li>
+                </ul>
+        
+                <h3><span class="emoji">🧩</span> Componentes de una Issue:</h3>
+                <ul>
+                    <li><strong>Título:</strong> Una descripción breve y concisa del problema o tarea.</li>
+                    <li><strong>Descripción (Cuerpo):</strong> Detalles completos, pasos para reproducir (si es un bug), criterios de aceptación (si es una feature), etc. Soporta Markdown.</li>
+                    <li><strong>Labels (Etiquetas):</strong> Para categorizar issues (ej. <span class="code-inline">bug</span>, <span class="code-inline">feature</span>, <span class="code-inline">priority:high</span>, <span class="code-inline">documentation</span>).</li>
+                    <li><strong>Assignees (Asignados):</strong> Las personas responsables de trabajar en la issue.</li>
+                    <li><strong>Milestone (Hito):</strong> Para agrupar issues relacionadas con un objetivo mayor o una versión específica (ej. "Versión 1.0", "Sprint 3").</li>
+                    <li><strong>Projects:</strong> Para vincular la issue a un tablero Kanban.</li>
+                    <li><strong>Comments (Comentarios):</strong> Para la discusión y actualizaciones sobre la issue.</li>
+                </ul>
+        
+                <h3><span class="emoji">🏷️</span> Tipos de Issues comunes para nuestro proyecto:</h3>
+                <ul>
+                    <li><strong>Features:</strong> Solicitudes para nuevas funcionalidades (ej. "Añadir botón para editar tareas").</li>
+                    <li><strong>Bugs:</strong> Reportes de errores en el código existente (ej. "El botón de eliminar no funciona en Firefox").</li>
+                    <li><strong>Enhancements:</strong> Propuestas para mejorar funcionalidades existentes o la experiencia de usuario (ej. "Mejorar el diseño del input de tareas").</li>
+                    <li><strong>Documentation:</strong> Tareas relacionadas con la creación o actualización de la documentación del proyecto.</li>
+                    <li><strong>Chores/Tasks:</strong> Tareas técnicas o de mantenimiento que no son visibles para el usuario final (ej. "Refactorizar la función addTask").</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Ventajas de usar Issues:</h3>
+                <ul>
+                    <li><strong>Trazabilidad completa:</strong> Desde la idea hasta la implementación y el cierre.</li>
+                    <li><strong>Asignación clara de responsabilidades:</strong> Se sabe quién está trabajando en qué.</li>
+                    <li><strong>Discusión centralizada:</strong> Toda la información y decisiones sobre una tarea en un solo lugar.</li>
+                    <li><strong>Integración con el código:</strong> Se pueden cerrar issues automáticamente con mensajes de commit (<span class="code-inline">Closes #123</span>).</li>
+                    <li><strong>Historial de decisiones:</strong> Sirve como documentación de por qué se hicieron ciertos cambios.</li>
+                    <li><strong>Facilita la planificación:</strong> Ayuda a organizar el trabajo del equipo y priorizar tareas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 25: PRÁCTICA - Creando Issues para Nuestra Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 25</div>
+                <h1>PRÁCTICA - Creando Issues para Nuestra Todo App</h1>
+                <h2>Planificando las Próximas Features</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor en GitHub:</h3>
+                <p>Se crearán las siguientes issues directamente en la interfaz de GitHub del repositorio <span class="code-inline">todo-app-curso</span>.</p>
+        
+                <h4><span class="emoji">🎫</span> Issue #1: Implementar funcionalidad de completar tareas</h4>
+                <div class="code-block">
+## Título: Implementar funcionalidad de completar tareas
+
+## Descripción
+Los usuarios necesitan poder marcar tareas como completadas para hacer seguimiento de su progreso.
+
+## Criterios de aceptación
+- [ ] Añadir un checkbox o un elemento clickeable a cada tarea en la lista.
+- [ ] Al interactuar con este elemento, la tarea debe marcarse visualmente como completada (ej. tachado, cambio de color).
+- [ ] Debe ser posible desmarcar una tarea completada para volverla a su estado pendiente.
+- [ ] El estado (completada/pendiente) debe ser manejado en el DOM.
+
+## Tareas técnicas (sugeridas)
+- [ ] Modificar la función `addTask` en `script.js` para incluir el elemento de "completar" en cada `<li>`.
+- [ ] Añadir estilos en `style.css` para las tareas completadas.
+- [ ] Implementar la lógica en `script.js` para alternar el estado de completado al hacer clic.
+- [ ] Probar la funcionalidad en diferentes navegadores (Chrome, Firefox).
+
+## Prioridad
+Alta - Funcionalidad core de una aplicación de lista de tareas.
+
+## Estimación
+2-3 horas
+                </div>
+                <p><strong>Labels añadidas:</strong> <span class="code-inline">feature</span>, <span class="code-inline">good first issue</span>, <span class="code-inline">priority:high</span></p>
+        
+                <h4><span class="emoji">🎫</span> Issue #2: Añadir filtros por estado de tarea</h4>
+                <div class="code-block">
+## Título: Añadir filtros por estado de tarea (Todas / Activas / Completadas)
+
+## Descripción
+Permitir a los usuarios filtrar la lista de tareas para ver solo las tareas activas, solo las completadas, o todas las tareas.
+
+## Criterios de aceptación
+- [ ] Añadir a la interfaz (HTML) botones o enlaces para los filtros: "Todas", "Activas", "Completadas".
+- [ ] Al hacer clic en un filtro, la lista de tareas debe actualizarse para mostrar solo las tareas correspondientes.
+- [ ] Indicar visualmente qué filtro está actualmente activo.
+- [ ] Por defecto, se deben mostrar "Todas" las tareas.
+
+## Dependencias
+- Depende de la Issue #1 (Implementar funcionalidad de completar tareas), ya que se necesita el estado de completado.
+
+## Tareas técnicas (sugeridas)
+- [ ] Diseñar y añadir los elementos de filtro en `index.html`.
+- [ ] Añadir estilos para los filtros en `style.css`, incluyendo el estado activo.
+- [ ] Implementar la lógica de filtrado en `script.js` que oculte/muestre tareas según el filtro seleccionado y el estado de cada tarea.
+- [ ] Asegurar que el añadir y eliminar tareas funciona correctamente con los filtros activos.
+
+## Prioridad
+Media
+
+## Estimación
+3-4 horas
+                </div>
+                <p><strong>Labels añadidas:</strong> <span class="code-inline">feature</span>, <span class="code-inline">depends-on-#1</span>, <span class="code-inline">priority:medium</span></p>
+        
+                <h4><span class="emoji">🎫</span> Issue #3: Mejorar diseño responsive</h4>
+                <div class="code-block">
+## Título: Mejorar el diseño responsive de la aplicación
+
+## Descripción
+La aplicación debe verse y funcionar correctamente en dispositivos móviles y tablets, adaptando su layout.
+
+## Criterios de aceptación
+- [ ] El layout general se adapta a pantallas pequeñas (ej. móviles &lt; 768px).
+- [ ] Los elementos de input y botones son fácilmente utilizables (táctiles) en móviles.
+- [ ] El texto es legible y los elementos no se superponen en pantallas pequeñas.
+- [ ] La lista de tareas es usable y visible correctamente.
+
+## Tareas técnicas (sugeridas)
+- [ ] Añadir o ajustar media queries en `style.css`.
+- [ ] Modificar estilos existentes para que sean flexibles (ej. usar porcentajes, flexbox, grid).
+- [ ] Ajustar tamaños de fuente, padding, y márgenes para móviles.
+- [ ] Probar en herramientas de desarrollador de navegadores (modo responsive) y, si es posible, en dispositivos reales.
+
+## Prioridad
+Media
+
+## Estimación
+2 horas
+                </div>
+                <p><strong>Labels añadidas:</strong> <span class="code-inline">enhancement</span>, <span class="code-inline">CSS</span>, <span class="code-inline">priority:medium</span></p>
+
+                <h4><span class="emoji">🎫</span> Issue #4: Implementar persistencia con localStorage</h4>
+                <div class="code-block">
+## Título: Implementar persistencia de tareas con localStorage
+
+## Descripción
+Las tareas añadidas por el usuario deben guardarse en el navegador para que persistan incluso después de cerrar y reabrir la pestaña o el navegador.
+
+## Criterios de aceptación
+- [ ] Al añadir una nueva tarea, esta se guarda en `localStorage`.
+- [ ] Al eliminar una tarea, esta se elimina de `localStorage`.
+- [ ] Al marcar/desmarcar una tarea como completada, su estado se actualiza en `localStorage`.
+- [ ] Al cargar la aplicación, se deben leer las tareas (y su estado) desde `localStorage` y mostrarlas en la lista.
+- [ ] Si `localStorage` no está disponible o está vacío, la aplicación debe funcionar normalmente sin errores.
+
+## Tareas técnicas (sugeridas)
+- [ ] Crear funciones en `script.js` para guardar el estado actual de la lista de tareas en `localStorage` (ej. `saveTasks()`).
+- [ ] Crear una función para cargar las tareas desde `localStorage` al inicio (`loadTasks()`).
+- [ ] Decidir un formato para almacenar las tareas (ej. array de objetos JSON).
+- [ ] Integrar estas funciones en los eventos de añadir, eliminar y completar tareas.
+- [ ] Añadir manejo de errores o comprobaciones para la disponibilidad de `localStorage`.
+
+## Prioridad
+Baja - Feature "nice-to-have" para este curso.
+
+## Estimación
+4-5 horas
+                </div>
+                <p><strong>Labels añadidas:</strong> <span class="code-inline">feature</span>, <span class="code-inline">JavaScript</span>, <span class="code-inline">priority:low</span></p>
+            </div>
+        </div>
+
+        <!-- Slide 26: PRÁCTICA - Los Alumnos Eligen Sus Issues -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 26</div>
+                <h1>PRÁCTICA - Los Alumnos Eligen Sus Issues</h1>
+                <h2>Asignación y Preparación del Trabajo</h2>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">📝</span> Ejercicio para alumnos:</h3>
+        
+                <h4>1. Explorar Issues disponibles:</h4>
+                <ul>
+                    <li>Ir al repositorio del curso en GitHub.</li>
+                    <li>Navegar a la pestaña "Issues".</li>
+                    <li>Leer detalladamente cada una de las issues creadas por el instructor (#1, #2, #3, #4).</li>
+                    <li>Entender los criterios de aceptación y las tareas técnicas sugeridas.</li>
+                </ul>
+        
+                <h4>2. Elegir una Issue para trabajar:</h4>
+                <ul>
+                    <li>Considerar el nivel de dificultad y el tiempo estimado.
+                        <ul>
+                            <li><strong>Recomendación Principiantes:</strong> Issue #3 (responsive CSS) o Issue #1 (completar tareas, si se sienten cómodos con JS básico).</li>
+                            <li><strong>Recomendación Intermedio:</strong> Issue #1 (completar tareas) o Issue #2 (filtros, un poco más complejo).</li>
+                            <li><strong>Recomendación Avanzado:</strong> Issue #4 (localStorage) o Issue #2 (filtros).</li>
+                        </ul>
+                    </li>
+                    <li>Verificar si la issue tiene dependencias (ej. Issue #2 depende de #1).</li>
+                    <li><strong>Asignarse la issue:</strong> En la página de la issue en GitHub, en la barra lateral derecha, buscar "Assignees" y hacer clic en "assign yourself". (Esto asegura que no haya dos personas trabajando en lo mismo sin saberlo).</li>
+                </ul>
+        
+                <h4>3. Preparar entorno local para trabajar en la issue:</h4>
+                <div class="code-block">
+# Asegúrate de estar en tu repositorio local 'todo-app-curso'
+
+# 1. Traer los últimos cambios de la rama 'main' del repositorio remoto (origin)
+git checkout main
+git pull origin main  # Esto actualiza tu 'main' local
+
+# 2. Crear una nueva rama para tu issue. Usa un nombre descriptivo.
+# Ejemplo si elegiste la Issue #1:
+git checkout -b feature/issue-1-complete-tasks
+
+# Ejemplo si elegiste la Issue #3:
+# git checkout -b feature/issue-3-responsive-design
+
+# (Ajusta el nombre de la rama según la issue que hayas elegido)
+                </div>
+        
+                <h4>4. Comentar en la Issue en GitHub:</h4>
+                <p>Una vez asignado y con tu rama creada, es buena práctica dejar un comentario en la issue en GitHub para informar al equipo.</p>
+                <div class="code-block">
+## Ejemplo de comentario en la Issue #1:
+
+Asignado! 🙋‍♂️ 
+
+He creado la rama `feature/issue-1-complete-tasks` y empezaré a trabajar en esto.
+Mi plan inicial es:
+1. Modificar `addTask` para añadir el checkbox.
+2. Implementar los estilos CSS para tareas completadas.
+3. Añadir la lógica JS para el toggle del estado.
+
+¿Alguna sugerencia antes de empezar?
+                </div>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Resultado esperado:</h3>
+                <ul>
+                    <li>Cada alumno tiene una issue asignada en GitHub.</li>
+                    <li>Cada alumno ha creado una rama local específica para su issue, basada en la última versión de <span class="code-inline">main</span>.</li>
+                    <li>El equipo está coordinado sobre quién trabaja en qué.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 27: PRÁCTICA - Desarrollo Individual de Features -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 27</div>
+                <h1>PRÁCTICA - Desarrollo Individual de Features</h1>
+                <h2>Los Alumnos Implementan Sus Issues</h2>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">⏱️</span> Tiempo de desarrollo: 45-60 minutos</h3>
+                <p>Los alumnos trabajan individualmente en la issue que eligieron, en su propia rama feature.</p>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">📋</span> Instrucciones generales para alumnos:</h3>
+        
+                <h4>1. Trabajar en su rama feature:</h4>
+                <div class="code-block">
+# Verificar que están en la rama correcta
+git status  # Debería mostrar "On branch feature/issue-X..."
+git branch  # La rama actual debe tener un '*'
+                </div>
+        
+                <h4>2. Hacer commits frecuentes y descriptivos:</h4>
+                <p>Divide tu trabajo en pequeños pasos lógicos y haz un commit para cada uno. Referencia la issue en tus mensajes de commit.</p>
+                <div class="code-block">
+# Ejemplo para Issue #1
+# Después de añadir el HTML/JS para el checkbox:
+git add script.js index.html 
+git commit -m "feat: add checkbox structure to task items - ref #1"
+
+# Después de añadir los estilos CSS:
+git add style.css
+git commit -m "style: add CSS for completed task state - ref #1" 
+
+# Después de implementar la funcionalidad JS de toggle:
+git add script.js
+git commit -m "feat: implement toggle functionality for task completion - ref #1"
+                </div>
+                <p>(Usa <span class="code-inline">fixes #1</span> en el último commit si crees que la issue está completamente resuelta con ese commit).</p>
+        
+                <h4>3. Probar continuamente:</h4>
+                <ul>
+                    <li>Abre <span class="code-inline">index.html</span> en tu navegador después de cada cambio significativo.</li>
+                    <li>Verifica que la nueva funcionalidad trabaja como se espera.</li>
+                    <li>Asegúrate de no haber roto funcionalidades existentes.</li>
+                    <li>Prueba casos borde (ej. ¿qué pasa si se añade una tarea vacía? ¿Funciona con muchas tareas?).</li>
+                </ul>
+        
+                <h4>4. Pedir ayuda si se atascan:</h4>
+                <ul>
+                    <li>No dudes en comentar en la issue en GitHub si tienes dudas o te bloqueas.</li>
+                    <li>Preguntar a compañeros (si el formato del curso lo permite).</li>
+                    <li>Consultar al instructor.</li>
+                </ul>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">💡</span> Ejemplo de desarrollo para Issue #1 (Completar tareas):</h3>
+                <p>El instructor puede mostrar un ejemplo de cómo abordar esta issue, o los alumnos pueden seguir el plan que hicieron.</p>
+                
+                <h4>Paso 1 - Modificar `addTask` para incluir checkbox (en `script.js`):</h4>
+                <div class="code-block">
+// Dentro de la función addTask, al crear el 'li':
+// ...
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'task-checkbox';
+    // Event listener para el checkbox se añadirá en un paso posterior
+    
+    li.prepend(checkbox); // O li.appendChild(checkbox) si prefieres al final
+// ...
+                </div>
+                <p>Commit: <span class="code-inline">git commit -m "feat: add checkbox element to task items - ref #1"</span></p>
+
+                <h4>Paso 2 - Añadir estilos para tareas completadas (en `style.css`):</h4>
+                <div class="code-block">
+.task-item.completed .task-text { /* Asumiendo que el texto está en un span con clase task-text */
+    text-decoration: line-through;
+    color: #aaa;
+}
+.task-item.completed {
+    background-color: #f0f0f0;
+}
+.task-checkbox { /* Estilos básicos para el checkbox */
+    margin-right: 10px; 
+}
+                </div>
+                 <p>Commit: <span class="code-inline">git commit -m "style: add CSS for completed task visual state - ref #1"</span></p>
+
+                <h4>Paso 3 - Implementar la lógica de toggle (en `script.js`):</h4>
+                <div class="code-block">
+// Dentro de la función addTask, después de crear el checkbox:
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            li.classList.add('completed');
+            // Opcional: Mover tarea completada al final de la lista
+        } else {
+            li.classList.remove('completed');
+        }
+        // Si se implementa localStorage (Issue #4), guardar cambios aquí.
+    });
+// ...
+// (Asegurarse que si hay un taskSpan, se añada la clase a 'li' para que el CSS funcione)
+// Por ejemplo, modificar el CSS a:
+// .task-item.completed span { text-decoration: line-through; color: #aaa; }
+                </div>
+                <p>Commit: <span class="code-inline">git commit -m "feat: implement task completion toggle logic - fixes #1"</span></p>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">👀</span> Supervisión del instructor:</h3>
+                <ul>
+                    <li>El instructor circulará (virtual o físicamente) para ayudar.</li>
+                    <li>Verificar que los alumnos están haciendo commits correctos.</li>
+                    <li>Asegurar que todos progresan y entienden el flujo.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 28: Pull Requests - Propuestas de Cambios -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 28</div>
+                <h1>Pull Requests - Propuestas de Cambios</h1>
+                <h2>El Corazón de la Colaboración en GitHub</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">❓</span> ¿Qué es un Pull Request (PR)?</h3>
+                <p>Un Pull Request (o Merge Request en otras plataformas como GitLab) es una forma de proponer cambios a un repositorio. Es una solicitud formal para que el propietario del repositorio "jale" (pull) tus cambios desde tu rama feature y los fusione (merge) en otra rama, usualmente la rama principal (<span class="code-inline">main</span> o <span class="code-inline">develop</span>).</p>
+                <p>Los PRs permiten:</p>
+                <ul>
+                    <li><strong>Revisión de código (Code Review):</strong> Otros desarrolladores pueden examinar tus cambios, hacer preguntas y sugerir mejoras.</li>
+                    <li><strong>Discusión:</strong> Un espacio para discutir la implementación antes de que se integre.</li>
+                    <li><strong>Integración Continua (CI):</strong> Se pueden ejecutar tests automáticos para verificar que los cambios no rompen nada.</li>
+                    <li><strong>Mantener la calidad del código:</strong> Asegura que el código nuevo cumple con los estándares del proyecto.</li>
+                    <li><strong>Documentar decisiones:</strong> El PR y su discusión sirven como registro de por qué se hicieron ciertos cambios.</li>
+                </ul>
+        
+                <h3><span class="emoji">🔄</span> Flujo típico de un Pull Request:</h3>
+                <div class="git-flow-diagram">
+1. Desarrollador crea una rama feature localmente.
+   (ej. `feature/add-login`)
+   ↓
+2. Hace commits en su rama feature.
+   ↓
+3. Sube la rama feature al repositorio remoto en GitHub.
+   (`git push origin feature/add-login`)
+   ↓
+4. En GitHub, crea un Pull Request desde `feature/add-login` hacia `main`.
+   ↓
+5. Otros desarrolladores revisan el código, comentan y discuten.
+   (El autor del PR puede hacer más commits para atender el feedback).
+   ↓
+6. Si hay CI, los tests automáticos se ejecutan.
+   ↓
+7. Una vez aprobado y los tests pasan, el PR es mergeado a `main`.
+   ↓
+8. La rama feature puede ser eliminada.
+                </div>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">📋</span> Componentes de un buen Pull Request:</h3>
+                <ul>
+                    <li><strong>Título descriptivo:</strong> Que resuma claramente el propósito del PR. (Ej: "feat: Implementar login con email y contraseña").</li>
+                    <li><strong>Descripción detallada:</strong>
+                        <ul>
+                            <li>¿Qué problema soluciona o qué feature añade?</li>
+                            <li>¿Cómo se implementó? (Breve resumen técnico si es complejo).</li>
+                            <li>¿Cómo probar los cambios?</li>
+                            <li>Referencias a issues relacionadas (Ej: "Fixes #42", "Closes #12", "Ref #7").</li>
+                        </ul>
+                    </li>
+                    <li><strong>Screenshots o GIFs:</strong> Especialmente útil para cambios visuales en la interfaz de usuario.</li>
+                    <li><strong>Lista de cambios (Checklist):</strong> Si el PR es grande, un resumen de los principales cambios.</li>
+                    <li><strong>Pequeño y enfocado:</strong> Idealmente, un PR debe abordar una sola preocupación o feature.</li>
+                </ul>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🌟</span> Beneficios del proceso de PR:</h3>
+                <ul>
+                    <li><strong>Detección temprana de bugs:</strong> Más ojos sobre el código ayudan a encontrar errores.</li>
+                    <li><strong>Compartir conocimiento:</strong> El equipo aprende sobre diferentes partes del sistema.</li>
+                    <li><strong>Consistencia en el código:</strong> Se mantienen los estándares y estilos del proyecto.</li>
+                    <li><strong>Mejora de habilidades:</strong> Tanto para el autor (recibiendo feedback) como para los revisores (analizando código).</li>
+                </ul>
+                <p>En nuestro proyecto, cada issue que los alumnos implementen se convertirá en un Pull Request para ser revisado por otros compañeros antes de ser mergeado a <span class="code-inline">main</span>.</p>
+            </div>
+        </div>
+
+        <!-- Slide 29: PRÁCTICA - Creando Pull Requests -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 29</div>
+                <h1>PRÁCTICA - Creando Pull Requests</h1>
+                <h2>De Desarrollo Local a Propuesta de Cambios en GitHub</h2>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">📋</span> Instrucciones para alumnos:</h3>
+                <p>Una vez que hayas terminado de implementar tu feature (o una parte significativa de ella) y hayas hecho todos tus commits en tu rama local.</p>
+        
+                <h4>1. Finalizar desarrollo local y subir la rama a GitHub:</h4>
+                <div class="code-block">
+# Asegúrate de que todos tus cambios están commiteados en tu rama feature
+git status 
+# Debería mostrar "nothing to commit, working tree clean"
+
+# Sube tu rama feature al repositorio remoto 'origin'
+# Reemplaza 'feature/issue-1-complete-tasks' con el nombre de TU rama
+git push -u origin feature/issue-1-complete-tasks 
+                </div>
+                <p>La opción <span class="code-inline">-u</span> (o <span class="code-inline">--set-upstream</span>) vincula tu rama local con la rama remota, para que futuros <span class="code-inline">git push</span> y <span class="code-inline">git pull</span> no necesiten especificar <span class="code-inline">origin</span> y el nombre de la rama.</p>
+        
+                <h4>2. Crear el Pull Request en GitHub:</h4>
+                <ul>
+                    <li>Ve a la página de tu repositorio en GitHub (ej. <span class="code-inline">https://github.com/TU_USUARIO/todo-app-curso</span>).</li>
+                    <li>GitHub usualmente detectará que has subido una nueva rama y mostrará un banner con un botón "Compare & pull request". Haz clic en él.</li>
+                    <li>Si no ves el banner, ve a la pestaña "Pull requests" y haz clic en el botón verde "New pull request".</li>
+                    <li><strong>Configurar las ramas:</strong>
+                        <ul>
+                            <li>Asegúrate que la rama "base" (a la que quieres mergear) es <span class="code-inline">main</span>.</li>
+                            <li>Asegúrate que la rama "compare" (la que contiene tus cambios) es tu rama feature (ej. <span class="code-inline">feature/issue-1-complete-tasks</span>).</li>
+                        </ul>
+                    </li>
+                </ul>
+        
+                <h4>3. Completar la información del Pull Request:</h4>
+                
+                <p><strong>Título del PR:</strong></p>
+                <p>Debe ser descriptivo. Si tu PR cierra una issue, puedes incluirlo aquí.</p>
+                <div class="code-block">
+Ejemplo para Issue #1:
+feat: Implementar funcionalidad de completar tareas con checkboxes (Fixes #1)
+                </div>
+        
+                <p><strong>Descripción del PR (Cuerpo):</strong></p>
+                <p>Usa Markdown para darle formato. Un buen template podría ser:</p>
+                <div class="code-block">
+## Descripción
+Este PR implementa la funcionalidad que permite a los usuarios marcar y desmarcar tareas como completadas. 
+Las tareas completadas se muestran visualmente con un estilo tachado y un fondo diferente.
+
+## Cambios realizados
+- Se añadió un elemento `&lt;input type="checkbox"&gt;` a cada item de la lista de tareas.
+- Se implementó lógica en `script.js` para:
+    - Escuchar eventos `change` en los checkboxes.
+    - Añadir/quitar la clase `completed` al elemento `&lt;li&gt;` correspondiente.
+- Se añadieron estilos en `style.css` para la clase `.completed` y `.task-checkbox`.
+
+## ¿Cómo probar?
+1. Clona esta rama: `git fetch origin feature/issue-1-complete-tasks && git checkout feature/issue-1-complete-tasks`
+2. Abre `index.html` en tu navegador.
+3. Añade algunas tareas.
+4. Haz clic en el checkbox de una tarea. Debería marcarse como completada (estilo visual).
+5. Vuelve a hacer clic en el checkbox. Debería volver al estado pendiente.
+6. Verifica que el botón de eliminar tarea sigue funcionando correctamente.
+
+## Screenshots (Opcional, pero muy útil para cambios UI)
+(Puedes arrastrar y soltar imágenes aquí si hay cambios visuales)
+<!-- 
+![Tarea pendiente](URL_A_SCREENSHOT_TAREA_PENDIENTE)
+![Tarea completada](URL_A_SCREENSHOT_TAREA_COMPLETADA)
+-->
+
+## Issues relacionadas
+- Fixes #1 
+<!-- GitHub automáticamente cerrará la Issue #1 cuando este PR se mergée si usas "Fixes", "Closes", o "Resolves" -->
+
+## Checklist del autor
+- [x] Mi código sigue las guías de estilo de este proyecto.
+- [x] He realizado una auto-revisión de mi propio código.
+- [x] He comentado mi código, particularmente en áreas difíciles de entender.
+- [x] He hecho los cambios correspondientes en la documentación (si aplica).
+- [x] Mis cambios no generan nuevas warnings.
+- [x] He añadido tests que prueban mis cambios (si aplica).
+- [x] Todos los tests nuevos y existentes pasan.
+                </div>
+        
+                <h4>4. Asignar reviewers (Revisores):</h4>
+                <ul>
+                    <li>En la barra lateral derecha del formulario del PR, busca la sección "Reviewers".</li>
+                    <li>Selecciona a 1 o 2 compañeros (o al instructor) para que revisen tu código.</li>
+                    <li>También puedes asignarte a ti mismo ("Assignees") si eres el principal responsable.</li>
+                    <li>Añade "Labels" relevantes (ej. <span class="code-inline">feature</span>, <span class="code-inline">needs-review</span>).</li>
+                </ul>
+        
+                <h4>5. Crear el Pull Request:</h4>
+                <ul>
+                    <li>Haz clic en el botón verde "Create pull request".</li>
+                    <li>Tu PR aparecerá en la lista de Pull Requests del repositorio.</li>
+                    <li>Verifica que se enlaza automáticamente con la issue que referencaste (ej. "Fixes #1").</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Resultado esperado:</h3>
+                <ul>
+                    <li>Cada alumno ha creado un Pull Request en GitHub desde su rama feature hacia <span class="code-inline">main</span>.</li>
+                    <li>El PR tiene un título y descripción claros.</li>
+                    <li>Se han asignado reviewers.</li>
+                    <li>El PR está listo para el proceso de Code Review.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 30: Code Review - Revisando el Trabajo de Otros -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 30</div>
+                <h1>Code Review - Revisando el Trabajo de Otros</h1>
+                <h2>Aprendiendo a Dar y Recibir Feedback Constructivo</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🎯</span> Objetivos del Code Review:</h3>
+                <ul>
+                    <li><strong>Mejorar la calidad del código:</strong> Detectar bugs, problemas de lógica, o ineficiencias antes de que lleguen a la rama principal.</li>
+                    <li><strong>Compartir conocimiento:</strong> Permite que otros miembros del equipo entiendan los cambios y aprendan nuevas técnicas o partes del sistema.</li>
+                    <li><strong>Mantener estándares y consistencia:</strong> Asegurar que el código nuevo sigue las guías de estilo y las arquitecturas definidas del proyecto.</li>
+                    <li><strong>Fomentar la colaboración y la comunicación:</strong> Es un punto de diálogo técnico.</li>
+                    <li><strong>Mentoría y aprendizaje:</strong> Es una oportunidad para que los desarrolladores más experimentados guíen a los menos experimentados, y viceversa.</li>
+                </ul>
+        
+                <h3><span class="emoji">🔍</span> Proceso de Revisión (Como Reviewer):</h3>
+                <ol>
+                    <li><strong>Entender el contexto:</strong> ¿Qué problema soluciona este PR? ¿Cuál es el objetivo de la feature? Lee la descripción del PR y la issue relacionada.</li>
+                    <li><strong>Revisar el código:</strong>
+                        <ul>
+                            <li>Ve a la pestaña "Files changed" en el PR en GitHub.</li>
+                            <li>Examina los cambios línea por línea o por archivo.</li>
+                            <li>Puedes dejar comentarios directamente en líneas específicas de código.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Probar localmente (altamente recomendado):</strong>
+                        <ul>
+                            <li>Clona la rama del PR en tu máquina local. (GitHub a menudo provee los comandos para esto en la página del PR).</li>
+                            <li>Ejecuta la aplicación y prueba la nueva funcionalidad. ¿Funciona como se espera? ¿Rompe algo más?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Dar feedback:</strong> Sé específico, constructivo y amable. Explica el "por qué" de tus sugerencias.</li>
+                    <li><strong>Decidir:</strong>
+                        <ul>
+                            <li><strong>Approve (Aprobar):</strong> Si los cambios son buenos y están listos para merge.</li>
+                            <li><strong>Request changes (Solicitar cambios):</strong> Si hay problemas que deben ser corregidos antes de mergear.</li>
+                            <li><strong>Comment (Comentar):</strong> Si solo quieres dejar feedback o hacer preguntas sin bloquear el merge.</li>
+                        </ul>
+                    </li>
+                </ol>
+        
+                <h3><span class="emoji">📝</span> ¿Qué buscar durante una revisión?</h3>
+                <ul>
+                    <li>✅ <strong>Funcionalidad:</strong> ¿El código hace lo que se supone que debe hacer? ¿Cumple los criterios de aceptación?</li>
+                    <li>✅ <strong>Legibilidad y Claridad:</strong> ¿Es el código fácil de entender? ¿Nombres de variables y funciones son descriptivos?</li>
+                    <li>✅ <strong>Correctitud:</strong> ¿Hay errores lógicos? ¿Maneja casos borde?</li>
+                    <li>✅ <strong>Estilo y Convenciones:</strong> ¿Sigue las guías de estilo del proyecto (indentación, formato, etc.)?</li>
+                    <li>✅ <strong>Eficiencia y Performance:</strong> ¿Hay alguna parte que podría ser ineficiente sin una buena razón? (No optimizar prematuramente).</li>
+                    <li>✅ <strong>Seguridad:</strong> ¿Introduce alguna vulnerabilidad? (Ej. ¿valida inputs del usuario?).</li>
+                    <li>✅ <strong>Mantenibilidad:</strong> ¿Será fácil modificar este código en el futuro? ¿Evita duplicación (DRY)?</li>
+                    <li>✅ <strong>Tests:</strong> ¿Hay tests para el nuevo código? ¿Pasan los tests existentes? (Si aplica).</li>
+                    <li>✅ <strong>Documentación:</strong> ¿Están los comentarios claros? ¿Se actualizó la documentación del proyecto si es necesario?</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">💬</span> Tipos de Comentarios en un PR:</h3>
+                
+                <p><strong>Pregunta / Aclaración:</strong></p>
+                <div class="code-block">
+❓ Pregunta: No estoy seguro de entender por qué se usó `Array.from()` aquí en lugar de un simple `for...of` loop. ¿Hay alguna ventaja específica que estoy pasando por alto?
+                </div>
+        
+                <p><strong>Sugerencia (no bloqueante, opcional):</strong></p>
+                <div class="code-block">
+💡 Sugerencia (opcional): Podrías considerar usar `const` en lugar de `let` para la variable `taskList` ya que no se reasigna después. ¡Pero funciona bien como está!
+                </div>
+        
+                <p><strong>Mejora (recomendada, pero puede ser no bloqueante):</strong></p>
+                <div class="code-block">
+✨ Mejora: Sería genial añadir un pequeño efecto de transición CSS cuando una tarea se marca como completada para una UX más suave. Algo como `transition: background-color 0.3s ease;`.
+                </div>
+        
+                <p><strong>Issue / Problema (generalmente bloqueante, requiere cambio):</strong></p>
+                <div class="code-block">
+⚠️ Issue: Esta función no maneja el caso en que `taskInput.value` sea una cadena vacía. Debería añadir una validación para prevenir que se añadan tareas vacías.
+                </div>
+        
+                <p><strong>Nitpick (pequeño detalle, usualmente no bloqueante):</strong></p>
+                <div class="code-block">
+🧹 Nitpick: Hay un espacio extra al final de esta línea.
+                </div>
+        
+                <p><strong>Positivo / Elogio:</strong></p>
+                <div class="code-block">
+🎉 ¡Excelente implementación! La lógica para manejar el estado de completado es muy clara y fácil de seguir. ¡Buen trabajo!
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 31: PRÁCTICA - Code Review en Acción -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 31</div>
+                <h1>PRÁCTICA - Code Review en Acción</h1>
+                <h2>Los Alumnos Revisan PRs de Compañeros</h2>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">⏱️</span> Ejercicio práctico (30 minutos):</h3>
+                <p>Cada alumno revisará al menos un Pull Request de un compañero.</p>
+        
+                <h4>1. Encontrar PRs para revisar:</h4>
+                <ul>
+                    <li>Ir a la pestaña "Pull requests" del repositorio del curso en GitHub.</li>
+                    <li>Buscar PRs que estén abiertos y que no sean tuyos.</li>
+                    <li>Si fuiste asignado como reviewer a un PR específico, prioriza ese.</li>
+                    <li>Coordina con tus compañeros para que todos los PRs reciban al menos una revisión.</li>
+                </ul>
+        
+                <h4>2. Proceso de revisión paso a paso:</h4>
+        
+                <p><strong>a) Entender el PR:</strong></p>
+                <ul>
+                    <li>Lee el título y la descripción del PR. ¿Qué issue soluciona? ¿Cuáles son los cambios propuestos?</li>
+                    <li>Revisa los "Criterios de Aceptación" de la issue original si es necesario.</li>
+                </ul>
+        
+                <p><strong>b) Revisar los cambios en el código ("Files changed"):</strong></p>
+                <ul>
+                    <li>Haz clic en la pestaña "Files changed" dentro del PR.</li>
+                    <li>GitHub mostrará las diferencias (diffs) en los archivos.
+                        <ul>
+                            <li>Líneas verdes con un "+" son adiciones.</li>
+                            <li>Líneas rojas con un "-" son eliminaciones.</li>
+                        </ul>
+                    </li>
+                    <li>Para dejar un comentario en una línea específica, pasa el mouse sobre la línea y haz clic en el icono azul "+". Escribe tu comentario y haz clic en "Start a review" o "Add single comment".</li>
+                </ul>
+        
+                <p><strong>c) Probar la funcionalidad localmente (Recomendado):</strong></p>
+                <div class="code-block">
+# En tu repositorio local:
+# 1. Asegúrate de que tu copia local está actualizada:
+git checkout main
+git pull origin main
+
+# 2. Trae la rama del PR. GitHub usualmente da el comando exacto.
+#    Ejemplo si el PR es de la rama 'feature/issue-X-nombre':
+git fetch origin feature/issue-X-nombre:feature/issue-X-nombre 
+git checkout feature/issue-X-nombre
+# O, si GitHub CLI está instalado:
+# gh pr checkout NUMERO_DEL_PR
+
+# 3. Abre `index.html` y prueba la funcionalidad implementada.
+#    ¿Funciona como se describe? ¿Hay bugs? ¿Rompe algo más?
+                </div>
+        
+                <p><strong>d) Dejar comentarios específicos y constructivos:</strong></p>
+                <ul>
+                    <li>Usa los tipos de comentarios vistos en la diapositiva anterior (Pregunta, Sugerencia, Mejora, Issue, Elogio).</li>
+                    <li>Sé claro, específico y amable. El objetivo es mejorar el código, no criticar a la persona.</li>
+                </ul>
+        
+                <h4>3. Ejemplos de feedback esperado (basado en las issues del curso):</h4>
+                
+                <p><strong>Revisando Issue #1 (Completar Tareas):</strong></p>
+                <div class="code-block">
+// En script.js, línea donde se añade la clase 'completed'
+Comentario:
+✨ ¡Funciona bien! Como sugerencia, podrías usar `li.classList.toggle('completed', this.checked);` 
+   para simplificar la lógica if/else en el event listener del checkbox. 
+   Hace lo mismo en una sola línea.
+                </div>
+        
+                <p><strong>Revisando Issue #3 (Responsive CSS):</strong></p>
+                <div class="code-block">
+// En style.css, dentro de una media query
+Comentario:
+⚠️ Issue: Probé esto en un viewport de 320px de ancho, y el botón "Añadir" 
+   se vuelve demasiado pequeño y difícil de presionar. ¿Podríamos aumentar 
+   su `min-width` o `padding` para móviles?
+                </div>
+        
+                <h4>4. Finalizar la revisión:</h4>
+                <ul>
+                    <li>Una vez que hayas dejado todos tus comentarios, haz clic en el botón "Review changes" (o "Finish your review") en la parte superior de la pestaña "Files changed".</li>
+                    <li>Elige una opción:
+                        <ul>
+                            <li><strong>Comment:</strong> Simplemente deja tus comentarios sin aprobar ni solicitar cambios.</li>
+                            <li><strong>Approve:</strong> Si el código te parece bien y está listo para merge.</li>
+                            <li><strong>Request changes:</strong> Si crees que se necesitan correcciones antes de que el PR pueda ser mergeado.</li>
+                        </ul>
+                    </li>
+                    <li>Añade un comentario resumen si lo deseas y envía la revisión.</li>
+                </ul>
+        
+                <h4>5. Como autor del PR, responder al feedback:</h4>
+                <ul>
+                    <li>Recibirás notificaciones de los comentarios.</li>
+                    <li>Agradece el feedback.</li>
+                    <li>Si estás de acuerdo con una sugerencia, haz los cambios en tu rama local, haz commit y push. El PR se actualizará automáticamente.
+                        <div class="code-block">
+git add .
+git commit -m "fix: address reviewer feedback on checkbox toggle"
+git push
+                        </div>
+                    </li>
+                    <li>Responde a los comentarios en GitHub, explicando los cambios que hiciste o por qué decidiste no hacer un cambio sugerido.</li>
+                    <li>Puedes solicitar una nueva revisión una vez que hayas abordado los comentarios.</li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> Objetivo del ejercicio:</h3>
+                <ul>
+                    <li>Practicar el dar y recibir feedback técnico de manera constructiva.</li>
+                    <li>Aprender de las implementaciones y enfoques de otros compañeros.</li>
+                    <li>Mejorar la calidad general del código del proyecto.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 32: PRÁCTICA - Merge de Pull Requests -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 32</div>
+                <h1>PRÁCTICA - Merge de Pull Requests</h1>
+                <h2>Integrando el Trabajo del Equipo a la Rama Principal</h2>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Demostración del instructor (o un alumno designado):</h3>
+                <p>Se seleccionará un PR que haya sido revisado y aprobado para ser mergeado a la rama <span class="code-inline">main</span>.</p>
+        
+                <h4><span class="emoji">📋</span> Criterios para mergear un Pull Request:</h4>
+                <ul>
+                    <li>✅ Al menos 1 o 2 aprobaciones de los revisores designados.</li>
+                    <li>✅ No hay "Requests for changes" pendientes.</li>
+                    <li>✅ Todas las conversaciones o preguntas en los comentarios han sido resueltas o respondidas.</li>
+                    <li>✅ Si hay tests automáticos configurados (CI), deben estar pasando (en verde).</li>
+                    <li>✅ No hay conflictos de merge con la rama base (<span class="code-inline">main</span>). GitHub lo indicará.</li>
+                </ul>
+        
+                <h4><span class="emoji">⚙️</span> Proceso de Merge en GitHub:</h4>
+        
+                <p><strong>1. Verificar el estado del PR en GitHub:</strong></p>
+                <ul>
+                    <li>Abrir el Pull Request.</li>
+                    <li>Buscar indicadores como:
+                        <ul>
+                            <li>"X approving reviews" ✅</li>
+                            <li>"All checks have passed" ✅ (si hay CI)</li>
+                            <li>"This branch has no conflicts with the base branch" ✅</li>
+                        </ul>
+                    </li>
+                </ul>
+        
+                <p><strong>2. Elegir la estrategia de merge (si está disponible y configurado en el repo):</strong></p>
+                <p>GitHub ofrece varias opciones al lado del botón "Merge pull request":</p>
+                <ul>
+                    <li><strong>Create a merge commit (Crear un commit de merge):</strong>
+                        <ul>
+                            <li>Es la opción por defecto.</li>
+                            <li>Todos los commits de la rama feature se añaden al historial de <span class="code-inline">main</span>, seguidos por un commit de merge.</li>
+                            <li>Preserva el historial completo de la rama feature. Útil para features grandes.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Squash and merge (Comprimir y fusionar):</strong>
+                        <ul>
+                            <li>Combina todos los commits de la rama feature en un solo commit en <span class="code-inline">main</span>.</li>
+                            <li>Resulta en un historial de <span class="code-inline">main</span> más limpio y lineal, con un commit por feature/PR.</li>
+                            <li>Bueno para features pequeñas o si los commits de la rama feature son muchos y desordenados ("WIP", "fix typo", etc.).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Rebase and merge (Rebase y fusionar):</strong>
+                        <ul>
+                            <li>Toma todos los commits de la rama feature y los aplica individualmente sobre <span class="code-inline">main</span>.</li>
+                            <li>Crea un historial completamente lineal, como si todos los cambios se hubieran hecho directamente en <span class="code-inline">main</span>.</li>
+                            <li>Puede ser más complejo de entender si no se está familiarizado con rebase.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p>Para este curso, <strong>"Create a merge commit"</strong> o <strong>"Squash and merge"</strong> son buenas opciones. El instructor puede elegir una.</p>
+        
+                <p><strong>3. Realizar el merge:</strong></p>
+                <ul>
+                    <li>Hacer clic en el botón verde "Merge pull request" (o la opción elegida).</li>
+                    <li>Confirmar el merge (puedes editar el mensaje de commit si es necesario, especialmente con "Squash and merge").</li>
+                    <li>Si el PR referenciaba una issue con "Fixes #N", "Closes #N", o "Resolves #N", la issue se cerrará automáticamente.</li>
+                </ul>
+        
+                <p><strong>4. Limpieza post-merge (opcional pero recomendado):</strong></p>
+                <ul>
+                    <li><strong>En GitHub:</strong> Después del merge, GitHub ofrecerá un botón "Delete branch" para eliminar la rama feature del repositorio remoto. Es buena práctica hacerlo para mantener limpio el repositorio.</li>
+                    <li><strong>En local (para todos los miembros del equipo):</strong>
+                        <div class="code-block">
+# Cambiar a tu rama main local
+git checkout main
+
+# Traer los cambios de main del repositorio remoto (que ahora incluye el PR mergeado)
+git pull origin main
+
+# Verificar que los nuevos cambios están integrados
+git log --oneline --graph
+
+# Eliminar la rama feature local (si ya no la necesitas)
+# Reemplaza 'feature/issue-1-complete-tasks' con el nombre de la rama mergeada
+git branch -d feature/issue-1-complete-tasks 
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Estado después del primer merge exitoso:</h3>
+                <ul>
+                    <li>La Issue correspondiente al PR está cerrada en GitHub. ✅</li>
+                    <li>La nueva funcionalidad está integrada en la rama <span class="code-inline">main</span>. ✅</li>
+                    <li>El equipo ha completado un ciclo de desarrollo colaborativo. ✅</li>
+                    <li>Todos los miembros del equipo pueden actualizar su <span class="code-inline">main</span> local para obtener los últimos cambios.</li>
+                </ul>
+                <p>El instructor continuará mergeando los PRs de los demás alumnos a medida que se aprueben.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <div class="keyboard-shortcut">
+        <div>Navegación:</div>
+        <div>← → : Cambiar slides</div>
+        <div>F : Pantalla completa</div>
+        <div>Esc : Salir pantalla completa</div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length; // Ahora será 32
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update slide counter
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // Scroll to top of slide content if it's long
+            slides[currentSlide].scrollTop = 0;
+        }
+
+        function changeSlide(n) {
+            if (currentSlide + n >= 0 && currentSlide + n < totalSlides) {
+                showSlide(currentSlide + n);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        changeSlide(-1);
+                    }
+                    break;
+                case 'ArrowRight':
+                     if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        changeSlide(1);
+                    }
+                    break;
+                case 'f':
+                case 'F':
+                    if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            document.documentElement.requestFullscreen();
+                        }
+                    }
+                    break;
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    break;
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50; // Minimum distance for a swipe
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    changeSlide(1);
+                } else {
+                    // Swipe right - previous slide
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+
+        // Auto-save slide position
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('gitCourseSlide_Day1', currentSlide);
+        });
+
+        // Restore slide position
+        window.addEventListener('load', function() {
+            const savedSlide = localStorage.getItem('gitCourseSlide_Day1');
+            if (savedSlide !== null && !isNaN(savedSlide) && parseInt(savedSlide) < totalSlides && parseInt(savedSlide) >=0) {
+                showSlide(parseInt(savedSlide));
+            } else {
+                showSlide(0); // Default to first slide if no valid saved state
+            }
+        });
+    </script>
+</body>
+</html>

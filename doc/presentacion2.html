@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Git - Día 2: Git Avanzado y GitHub Actions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .slide-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #444;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .code-inline {
+            background: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        .highlight-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .practice-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .practice-box h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .theory-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .theory-box h3 {
+            color: #1565c0;
+            margin-top: 0;
+        }
+
+        .instructor-demo {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .instructor-demo h3 {
+            color: #7b1fa2;
+            margin-top: 0;
+        }
+
+        .student-exercise {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .student-exercise h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #667eea;
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .git-flow-diagram {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            text-align: center;
+            white-space: pre; /* Mantener formato de pre */
+            overflow-x: auto;
+        }
+
+        .status-check {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .keyboard-shortcut {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .flex-item {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .navigation {
+                bottom: 15px;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            .flex-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="slide-counter" id="slideCounter">1 / 17</div>
+        
+        <!-- Slide 1: Introducción al Día 2 -->
+        <div class="slide active">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 1</div>
+                <h1>Control de Versiones con Git - Día 2</h1>
+                <h2>Git Avanzado, Workflows y Automatización</h2>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎯</span> Objetivos del Día 2:</h3>
+                <ul>
+                    <li>Comprender y aplicar Git Flow para la gestión de ramas.</li>
+                    <li>Aprender a manejar dependencias con Git Submodules.</li>
+                    <li>Gestionar archivos grandes en Git con Git LFS.</li>
+                    <li>Introducción a CI/CD y cómo implementarlo con GitHub Actions.</li>
+                    <li>Automatizar pruebas y despliegues para nuestro Todo App.</li>
+                </ul>
+            </div>
+
+            <h3><span class="emoji">🚀</span> ¿Qué vamos a lograr hoy?</h3>
+            <p>Llevaremos nuestro conocimiento de Git y GitHub al siguiente nivel, explorando flujos de trabajo profesionales y herramientas de automatización para mejorar la eficiencia y la calidad de nuestros proyectos.</p>
+
+            <h3><span class="emoji">📚</span> Metodología:</h3>
+            <ul>
+                <li><strong>Teoría conceptual</strong> de cada tema avanzado.</li>
+                <li><strong>Demostraciones prácticas</strong> por el instructor.</li>
+                <li><strong>Ejercicios prácticos sencillos</strong> para reforzar conceptos.</li>
+                <li>Aplicación de CI/CD a nuestra Todo App.</li>
+            </ul>
+
+            <h3><span class="emoji">⏰</span> Estructura del día:</h3>
+            <ul>
+                <li><strong>Git Flow</strong> → Flujo de trabajo estructurado</li>
+                <li><strong>Git Submodules & LFS</strong> → Manejo de dependencias y archivos grandes (+ Práctica)</li>
+                <li><strong>CI/CD con GitHub Actions</strong> → Automatización de pruebas y despliegues</li>
+            </ul>
+        </div>
+
+                <!-- 
+        INSERTAR ESTE NUEVO BLOQUE DESPUÉS DE LA DIAPOSITIVA 1 (Introducción al Día 2)
+        Estas se convertirán en las Diapositivas 2 y 3
+        -->
+
+        <!-- Slide 2: .gitignore - Teoría -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 2</div>
+                <h1>El Archivo .gitignore: Ignorando Archivos en Git</h1>
+                <h2>Manteniendo tu Repositorio Limpio</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🚫</span> ¿Qué es <span class="code-inline">.gitignore</span>?</h3>
+                <p>Un archivo de texto llamado <span class="code-inline">.gitignore</span> que le dice a Git qué archivos o directorios debe ignorar. Los archivos ignorados no serán rastreados por Git, lo que significa que no aparecerán en <span class="code-inline">git status</span> (como no rastreados) y no se añadirán al staging area con comandos como <span class="code-inline">git add .</span>.</p>
+                <p>Es crucial para evitar que archivos innecesarios o sensibles se incluyan en el historial del repositorio.</p>
+            </div>
+
+            <h3><span class="emoji">🎯</span> ¿Por qué usar <span class="code-inline">.gitignore</span>?</h3>
+            <ul>
+                <li><strong>Evitar archivos generados:</strong> Logs, archivos compilados, builds.</li>
+                <li><strong>Excluir dependencias:</strong> Carpetas como <span class="code-inline">node_modules/</span>, <span class="code-inline">vendor/</span> (se gestionan con gestores de paquetes).</li>
+                <li><strong>Ignorar archivos de configuración del editor/IDE:</strong> Carpetas como <span class="code-inline">.vscode/</span>, <span class="code-inline">.idea/</span>, archivos <span class="code-inline">.DS_Store</span>.</li>
+                <li><strong>Mantener fuera archivos sensibles:</strong> Claves API, contraseñas, archivos <span class="code-inline">.env</span> con credenciales (aunque para esto es mejor usar variables de entorno y nunca commitear secretos).</li>
+                <li><strong>Reducir el tamaño del repositorio:</strong> Al no incluir archivos grandes e innecesarios.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">⚙️</span> Sintaxis de <span class="code-inline">.gitignore</span>:</h3>
+                <ul>
+                    <li>Líneas en blanco o que comienzan con <span class="code-inline">#</span> son ignoradas (comentarios).</li>
+                    <li>Patrones de archivo estándar (glob patterns) como en la shell.
+                        <ul>
+                            <li><span class="code-inline">*.log</span>: Ignora todos los archivos con extensión .log.</li>
+                            <li><span class="code-inline">build/</span>: Ignora el directorio "build" y todo su contenido.</li>
+                            <li><span class="code-inline">!importante.log</span>: Excepción, no ignorar este archivo aunque coincida con un patrón anterior.</li>
+                            <li><span class="code-inline">/debug.log</span>: Ignora solo <span class="code-inline">debug.log</span> en la raíz, no en subdirectorios.</li>
+                        </ul>
+                    </li>
+                    <li>El archivo <span class="code-inline">.gitignore</span> debe ser añadido y commiteado al repositorio para que aplique a todos los colaboradores.</li>
+                </ul>
+                <p>Puedes tener múltiples archivos <span class="code-inline">.gitignore</span> en diferentes subdirectorios, aplicando sus reglas recursivamente.</p>
+                <p>Existe una <a href="https://github.com/github/gitignore" target="_blank">colección de plantillas de .gitignore</a> de GitHub para diferentes lenguajes y frameworks.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: PRÁCTICA - .gitignore para la Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 3</div>
+                <h1>PRÁCTICA: Creando un <span class="code-inline">.gitignore</span> para la Todo App</h1>
+                <h2>Aplicando Reglas de Ignorado</h2>
+            </div>
+
+            <div class="practice-box">
+                <h3><span class="emoji">🎯</span> Objetivo del Ejercicio:</h3>
+                <p>Crear un archivo <span class="code-inline">.gitignore</span> para nuestro proyecto <span class="code-inline">todo-app-curso</span> para ignorar archivos comunes del sistema operativo y de desarrollo (aunque nuestro proyecto es simple, es buena práctica).</p>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos para los Alumnos:</h3>
+                <ol>
+                    <li>
+                        <strong>Navegar a la raíz de tu proyecto <span class="code-inline">todo-app-curso</span> en la terminal.</strong>
+                    </li>
+                    <li>
+                        <strong>Crear el archivo <span class="code-inline">.gitignore</span>:</strong>
+                        <p>Puedes usar tu editor de código o un comando.</p>
+                        <div class="code-block">
+# En sistemas Unix-like (Linux, macOS)
+touch .gitignore
+
+# En Windows (PowerShell)
+New-Item .gitignore -ItemType File
+# O simplemente crea el archivo con tu editor de texto.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Añadir reglas al <span class="code-inline">.gitignore</span>:</strong>
+                        <p>Abre el archivo <span class="code-inline">.gitignore</span> en tu editor y añade el siguiente contenido:</p>
+                        <div class="code-block">
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos de dependencias (si usáramos Node.js más adelante)
+# node_modules/
+
+# Archivos de build (si tuviéramos un proceso de build)
+# dist/
+# build/
+
+# Archivos de entorno (¡NUNCA commitear secretos!)
+.env
+.env.*
+!.env.example
+
+# Archivos temporales o de respaldo del editor
+*~
+*.tmp
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Guardar el archivo <span class="code-inline">.gitignore</span>.</strong>
+                    </li>
+                    <li>
+                        <strong>Verificar el estado con Git:</strong>
+                        <div class="code-block">
+git status
+# Deberías ver que .gitignore aparece como un archivo "Untracked".
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Simular la creación de un archivo ignorado:</strong>
+                        <p>Crea un archivo que coincida con una de las reglas, por ejemplo, un archivo de log.</p>
+                        <div class="code-block">
+echo "Este es un log de prueba" > mi_app.log
+git status
+# Observa que 'mi_app.log' NO aparece en la lista de untracked files.
+# ¡.gitignore está funcionando!
+                        </div>
+                        <p>También puedes crear una carpeta <span class="code-inline">.vscode</span> y un archivo dentro para ver que se ignora.</p>
+                    </li>
+                    <li>
+                        <strong>Añadir y hacer commit del archivo <span class="code-inline">.gitignore</span>:</strong>
+                        <p>Es importante que <span class="code-inline">.gitignore</span> SÍ esté en el repositorio.</p>
+                        <div class="code-block">
+git add .gitignore
+git commit -m "chore: add .gitignore file for common exclusions"
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Hacer push de los cambios (si estás en una rama que se sube):</strong>
+                        <div class="code-block">
+git push origin tu-rama # (ej. main o develop)
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">💡</span> ¿Qué pasa si un archivo ya está rastreado y luego lo añades a <span class="code-inline">.gitignore</span>?</h3>
+                <p>Git continuará rastreando ese archivo. Para dejar de rastrearlo (manteniendo la copia local pero eliminándolo del índice de Git para futuros commits), necesitas usar:</p>
+                <div class="code-block">
+git rm --cached nombre_del_archivo_ya_rastreado
+# Luego haz commit de este cambio.
+                </div>
+                <p>Si quieres eliminarlo del historial completamente (operación destructiva y avanzada), se necesitaría reescribir el historial con herramientas como <span class="code-inline">git filter-repo</span> o BFG Repo-Cleaner, lo cual está fuera del alcance de este ejercicio básico.</p>
+            </div>
+        </div>
+        <!-- FIN DEL NUEVO BLOQUE -->
+
+        <!-- Slide 2: Git Flow - Modelo y Ramas (Revisado) -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 2</div>
+                <h1>Git Flow: Modelo de Ramificación Estructurado</h1>
+                <h2>Organizando el Flujo de Desarrollo</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🌊</span> ¿Qué es Git Flow?</h3>
+                <p>Un modelo de ramificación que define una estructura estricta para organizar el desarrollo, facilitando el trabajo en paralelo, la gestión de releases y el mantenimiento de versiones estables.</p>
+            </div>
+
+            <h3><span class="emoji">🌳</span> Ramas Principales (Larga Duración):</h3>
+            <div class="flex-container">
+                <div class="flex-item theory-box">
+                    <h4><span class="code-inline">main</span> (o master)</h4>
+                    <ul>
+                        <li>Refleja el estado de producción.</li>
+                        <li>Solo recibe merges de ramas <span class="code-inline">release/*</span> y <span class="code-inline">hotfix/*</span>.</li>
+                        <li>Cada commit en <span class="code-inline">main</span> es una nueva versión de producción y debería ser tageado.</li>
+                        <li><strong>Siempre estable y desplegable.</strong></li>
+                    </ul>
+                </div>
+                <div class="flex-item theory-box">
+                    <h4><span class="code-inline">develop</span></h4>
+                    <ul>
+                        <li>Rama principal de integración para desarrollo.</li>
+                        <li>Contiene las últimas features completadas y aprobadas.</li>
+                        <li>Es la base para crear ramas <span class="code-inline">feature/*</span> y <span class="code-inline">release/*</span>.</li>
+                        <li>Puede no ser siempre estable, pero debería serlo antes de una release.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3><span class="emoji">🌿</span> Ramas de Soporte (Corta Duración):</h3>
+             <ul>
+                <li><span class="code-inline">feature/*</span>: Para nuevas funcionalidades. Nacen de <span class="code-inline">develop</span> y se mergean de vuelta a <span class="code-inline">develop</span>.</li>
+                <li><span class="code-inline">release/*</span>: Para preparar una nueva release. Nacen de <span class="code-inline">develop</span>. Se mergean a <span class="code-inline">main</span> (y se tagean) y también a <span class="code-inline">develop</span>.</li>
+                <li><span class="code-inline">hotfix/*</span>: Para correcciones urgentes en producción. Nacen de <span class="code-inline">main</span>. Se mergean a <span class="code-inline">main</span> (y se tagean) y también a <span class="code-inline">develop</span>.</li>
+            </ul>
+            <div class="git-flow-diagram">
+main    --------------------------------------------o----o-------------------o----o--
+       /                                           /    /                   /    /
+      /                                           /    /                   /    /
+develop --o----o----o----o----o----o----o----o---o----o----o----o----o----o----o----
+         /    /    /          /              /        /                   /
+        /    /    /          /        ------         /                   /
+feature A --o----o feature B --o----o-/        release/v1.0 --o----o hotfix/v1.0.1
+            </div>
+        </div>
+
+        <!-- Slide 3: PRÁCTICA Git Flow - Preparación y Feature Branch -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 3</div>
+                <h1>PRÁCTICA Git Flow: Feature "Modo Oscuro"</h1>
+                <h2>Desde Issue a Feature Branch</h2>
+            </div>
+
+            <div class="practice-box">
+                <h3><span class="emoji">🎯</span> Escenario: Implementar "Modo Oscuro" para la Todo App.</h3>
+                <p>Asumimos que tenemos nuestro repositorio <span class="code-inline">todo-app-curso</span> con las ramas <span class="code-inline">main</span> y <span class="code-inline">develop</span> ya creadas y sincronizadas (inicialmente pueden apuntar al mismo commit).</p>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos (Simulados y Reales):</h3>
+                
+                <h4>1. Crear Issue en GitHub:</h4>
+                <ul>
+                    <li>En GitHub, ir a "Issues" → "New issue".</li>
+                    <li><strong>Título:</strong> "Feature: Implementar Modo Oscuro"</li>
+                    <li><strong>Descripción:</strong> "Añadir un toggle para que el usuario pueda cambiar entre tema claro y oscuro."</li>
+                    <li><strong>Labels:</strong> <span class="code-inline">feature</span>, <span class="code-inline">enhancement</span></li>
+                    <li>Asignar a un desarrollador (ej. a ti mismo). Esta issue será, por ejemplo, la <strong>#5</strong>.</li>
+                </ul>
+
+                <h4>2. Preparar el Entorno Local (Asegurar que <span class="code-inline">develop</span> está actualizada):</h4>
+                <div class="code-block">
+# En tu repositorio local 'todo-app-curso'
+git checkout develop
+git pull origin develop # Asegurar que tenemos lo último de develop
+                </div>
+                 <p>(Si <span class="code-inline">develop</span> no existe remotamente aún, el primer push la creará: <span class="code-inline">git push -u origin develop</span>)</p>
+
+                <h4>3. Crear la Rama Feature desde <span class="code-inline">develop</span>:</h4>
+                <p>Nombraremos la rama usando la convención <span class="code-inline">feature/issueN-descripcion</span>.</p>
+                <div class="code-block">
+git checkout -b feature/issue5-dark-mode develop
+# Switched to a new branch 'feature/issue5-dark-mode'
+                </div>
+
+                <h4>4. Desarrollar la Feature "Modo Oscuro":</h4>
+                <p>Esto implicaría modificar <span class="code-inline">style.css</span> y <span class="code-inline">script.js</span>. (Simularemos con cambios simples).</p>
+                <p><strong>Cambio en <span class="code-inline">style.css</span>:</strong></p>
+                <div class="code-block">
+/* style.css - Añadir al final */
+body.dark-mode {
+    background: #333;
+    color: #f0f0f0;
+}
+body.dark-mode .container {
+    background: #444;
+    box-shadow: 0 2px 10px rgba(255,255,255,0.05);
+}
+body.dark-mode h1 {
+    color: #f0f0f0;
+}
+/* ... más estilos para modo oscuro ... */
+                </div>
+                <p><strong>Cambio en <span class="code-inline">script.js</span> (y quizás <span class="code-inline">index.html</span> para un botón):</strong></p>
+                <p>Añadir un botón en <span class="code-inline">index.html</span>:</p>
+                <div class="code-block">
+&lt;!-- index.html - por ejemplo, antes del div.container --&gt;
+&lt;button id="toggleDarkModeBtn"&gt;Toggle Dark Mode&lt;/button&gt;
+                </div>
+                <p>Añadir lógica en <span class="code-inline">script.js</span>:</p>
+                <div class="code-block">
+// script.js - Añadir al final del DOMContentLoaded
+const toggleBtn = document.getElementById('toggleDarkModeBtn');
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        // Opcional: Guardar preferencia en localStorage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
+// Opcional: Cargar preferencia al inicio
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+                </div>
+
+                <h4>5. Hacer Commits Incrementales en la Rama Feature:</h4>
+                <div class="code-block">
+git add index.html
+git commit -m "feat(ui): add dark mode toggle button - ref #5"
+
+git add style.css
+git commit -m "style: add basic dark mode styles - ref #5"
+
+git add script.js
+git commit -m "feat(dark-mode): implement toggle functionality and localStorage - fixes #5"
+
+git push origin feature/issue5-dark-mode # Subir la rama feature a GitHub
+                </div>
+                <p>Nota el uso de "fixes #5" en el último commit para que GitHub cierre la issue automáticamente cuando se mergée el PR (si el PR es directo a develop y luego develop a main, o si el PR de release incluye este commit).</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: PRÁCTICA Git Flow - Merge a Develop y Preparación de Release -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 4</div>
+                <h1>PRÁCTICA Git Flow: Feature Completa y Release</h1>
+                <h2>Integrando a Develop y Preparando v1.1.0</h2>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Continuación de Pasos:</h3>
+
+                <h4>6. Crear Pull Request (PR) de <span class="code-inline">feature/issue5-dark-mode</span> a <span class="code-inline">develop</span>:</h4>
+                <ul>
+                    <li>En GitHub, crea un PR desde tu rama <span class="code-inline">feature/issue5-dark-mode</span>.</li>
+                    <li><strong>Base:</strong> <span class="code-inline">develop</span></li>
+                    <li><strong>Compare:</strong> <span class="code-inline">feature/issue5-dark-mode</span></li>
+                    <li>Escribe un título y descripción claros. Menciona "Fixes #5".</li>
+                    <li>Asigna revisores.</li>
+                </ul>
+                
+                <h4>7. Revisión y Merge del PR a <span class="code-inline">develop</span>:</h4>
+                <ul>
+                    <li>Los revisores aprueban el PR.</li>
+                    <li>El PR se mergea a la rama <span class="code-inline">develop</span> (usando "Merge pull request" o "Squash and merge").</li>
+                    <li>La rama <span class="code-inline">feature/issue5-dark-mode</span> puede ser eliminada en GitHub y localmente.</li>
+                </ul>
+                <div class="code-block">
+# Localmente, después del merge en GitHub:
+git checkout develop
+git pull origin develop
+git branch -d feature/issue5-dark-mode
+                </div>
+
+                <h4>8. Preparar una Nueva Release (ej. v1.1.0):</h4>
+                <p>Supongamos que <span class="code-inline">develop</span> ahora tiene la feature "Modo Oscuro" y otras, y está lista para una release.</p>
+                <div class="code-block">
+# Asegurar que develop está actualizada localmente
+git checkout develop
+git pull origin develop
+
+# Crear la rama release desde develop
+git checkout -b release/v1.1.0 develop
+                </div>
+                
+                <h4>9. Finalizar la Release:</h4>
+                <ul>
+                    <li>En la rama <span class="code-inline">release/v1.1.0</span>:
+                        <ul>
+                            <li>Actualizar número de versión en archivos (ej. <span class="code-inline">package.json</span>, si existiera, o un comentario en <span class="code-inline">index.html</span>).</li>
+                            <li>Hacer últimos tests, correcciones de bugs menores específicos de la release.</li>
+                            <li>Actualizar changelog o notas de la release.</li>
+                        </ul>
+                    </li>
+                    <li>Hacer commit de estos cambios en <span class="code-inline">release/v1.1.0</span>.</li>
+                     <div class="code-block">
+# Ejemplo: Actualizar un comentario de versión en index.html
+# <!-- App Version: 1.1.0 -->
+git add index.html 
+git commit -m "chore: bump version to 1.1.0 for release"
+git push origin release/v1.1.0 # Subir la rama release
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: PRÁCTICA Git Flow - Merge a Main, Tag y GitHub Release -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 5</div>
+                <h1>PRÁCTICA Git Flow: Lanzamiento de v1.1.0</h1>
+                <h2>Merge a Main, Tagging y Release en GitHub</h2>
+            </div>
+
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos Finales del Lanzamiento:</h3>
+
+                <h4>10. Mergear la Rama Release a <span class="code-inline">main</span>:</h4>
+                <p>Esto se hace típicamente mediante un PR de <span class="code-inline">release/v1.1.0</span> a <span class="code-inline">main</span> en GitHub para una última revisión, o directamente si el proceso lo permite.</p>
+                <div class="code-block">
+# Localmente (si se hace merge directo, aunque PR es mejor práctica):
+git checkout main
+git pull origin main
+git merge --no-ff release/v1.1.0 # --no-ff para crear siempre un merge commit
+# (Resolver conflictos si los hubiera, aunque no deberían si se sigue Git Flow)
+git push origin main
+                </div>
+                <p>Si se usó un PR en GitHub, mergéalo desde la interfaz.</p>
+
+                <h4>11. Tagear el Commit de Merge en <span class="code-inline">main</span>:</h4>
+                <div class="code-block">
+# Asegurarse de estar en main y con el último commit de merge
+git checkout main
+git pull origin main # (si fue mergeado en GitHub)
+
+git tag -a v1.1.0 -m "Release version 1.1.0"
+git push origin v1.1.0 # Empujar el tag al remoto
+                </div>
+
+                <h4>12. Mergear la Rama Release de vuelta a <span class="code-inline">develop</span>:</h4>
+                <p>Para asegurar que cualquier corrección hecha en la rama release también esté en <span class="code-inline">develop</span>.</p>
+                 <div class="code-block">
+git checkout develop
+git pull origin develop
+git merge --no-ff release/v1.1.0
+git push origin develop
+                </div>
+
+                <h4>13. Eliminar la Rama Release:</h4>
+                <div class="code-block">
+git branch -d release/v1.1.0
+git push origin --delete release/v1.1.0 # Eliminarla del remoto
+                </div>
+
+                <h4>14. Crear una "Release" en GitHub:</h4>
+                <ul>
+                    <li>En tu repositorio en GitHub, ve a la pestaña "Releases" (o "Tags" y luego "Create release" desde el tag <span class="code-inline">v1.1.0</span>).</li>
+                    <li><strong>Tag version:</strong> Selecciona <span class="code-inline">v1.1.0</span>.</li>
+                    <li><strong>Release title:</strong> "Version 1.1.0 - Modo Oscuro y Mejoras"</li>
+                    <li><strong>Describe esta release:</strong> Añade notas sobre los cambios principales (ej. "Implementado Modo Oscuro", "Corrección de bugs menores"). Puedes enlazar a PRs o issues.</li>
+                    <li>(Opcional) Puedes adjuntar artefactos de build (ej. un .zip del proyecto).</li>
+                    <li>Haz clic en "Publish release".</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3><span class="emoji">🎉</span> ¡Release v1.1.0 Lanzada!</h3>
+                <p>La rama <span class="code-inline">main</span> ahora contiene el código de la v1.1.0, está tageada, y hay una release formal en GitHub. La rama <span class="code-inline">develop</span> también tiene todos estos cambios y está lista para el siguiente ciclo de desarrollo.</p>
+            </div>
+        </div>
+        <!-- FIN DEL NUEVO BLOQUE -->
+
+
+        <!-- Slide 4: Git Submodules - Introducción -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 6</div>
+                <h1>Git Submodules: Manejando Dependencias Externas</h1>
+                <h2>Integrando Proyectos Dentro de Proyectos</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🧩</span> ¿Qué son los Git Submodules?</h3>
+                <p>Los submodules permiten mantener un repositorio Git como un subdirectorio dentro de otro repositorio Git. Esto es útil para incluir y gestionar dependencias de proyectos externos o componentes reutilizables.</p>
+                <p>Un submodule es esencialmente un puntero a un commit específico en otro repositorio.</p>
+            </div>
+
+            <h3><span class="emoji">🎯</span> Casos de Uso Comunes:</h3>
+            <ul>
+                <li><strong>Librerías de terceros:</strong> Incluir una librería externa que no está disponible a través de un gestor de paquetes, o cuando necesitas una versión específica no lanzada.</li>
+                <li><strong>Componentes compartidos:</strong> Usar un componente o módulo desarrollado internamente en múltiples proyectos.</li>
+                <li><strong>Plugins o temas:</strong> En sistemas de gestión de contenido (CMS) o frameworks, para incluir plugins o temas como repositorios separados.</li>
+                <li><strong>Documentación separada:</strong> Mantener la documentación en un repo aparte e incluirla en el proyecto principal.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">⚙️</span> ¿Cómo funciona?</h3>
+                <p>Cuando añades un submodule, Git crea un archivo <span class="code-inline">.gitmodules</span> en la raíz de tu proyecto. Este archivo mapea la ruta del subdirectorio al URL del repositorio del submodule.</p>
+                <p>Tu repositorio principal solo almacena la URL del submodule y el hash del commit al que apunta. No almacena el contenido del submodule directamente.</p>
+                <div class="code-block">
+# Ejemplo de .gitmodules
+[submodule "libs/mi-libreria"]
+    path = libs/mi-libreria
+    url = https://github.com/usuario/mi-libreria.git
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Git Submodules - Comandos y Flujo de Trabajo -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 7</div>
+                <h1>Git Submodules: Comandos y Flujo de Trabajo</h1>
+                <h2>Trabajando con Submódulos en la Práctica</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">➕</span> Añadir un Submodule:</h3>
+                <div class="code-block">
+git submodule add <url_repositorio_submodule> [ruta_local]
+# Ejemplo:
+git submodule add https://github.com/usuario/mi-libreria.git libs/mi-libreria
+                </div>
+                <p>Esto clona el submodule en la ruta especificada y crea/actualiza <span class="code-inline">.gitmodules</span>. Luego debes hacer commit de estos cambios en tu repositorio principal.</p>
+                <div class="code-block">
+git add .gitmodules libs/mi-libreria
+git commit -m "feat: add mi-libreria submodule"
+                </div>
+            </div>
+
+            <h3><span class="emoji">📥</span> Clonar un Repositorio con Submodules:</h3>
+            <p>Por defecto, <span class="code-inline">git clone</span> no inicializa los submodules. Tienes dos opciones:</p>
+            <ol>
+                <li>Clonar recursivamente:
+                    <div class="code-block">git clone --recurse-submodules <url_repositorio_principal></div>
+                </li>
+                <li>Clonar normalmente y luego inicializar y actualizar:
+                    <div class="code-block">
+git clone <url_repositorio_principal>
+cd <nombre_repositorio_principal>
+git submodule init      # Inicializa submodules registrados en .gitmodules
+git submodule update    # Clona los archivos del submodule al commit correcto
+                    </div>
+                </li>
+            </ol>
+
+            <h3><span class="emoji">🔄</span> Actualizar un Submodule a su Última Versión (del repo remoto del submodule):</h3>
+            <div class="code-block">
+# 1. Ir al directorio del submodule
+cd libs/mi-libreria
+# 2. Cambiar a la rama deseada y hacer pull (ej. main)
+git checkout main
+git pull origin main
+# 3. Volver al repositorio principal
+cd ../..
+# 4. Ver los cambios y hacer commit en el repo principal
+git status  # Mostrará: modified: libs/mi-libreria (new commits)
+git add libs/mi-libreria
+git commit -m "chore: update mi-libreria submodule to latest version"
+            </div>
+            <p>O, para actualizar todos los submodules a lo que está registrado en el superproyecto:</p>
+            <div class="code-block">git submodule update --remote --merge # O --rebase</div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">⚠️</span> Puntos Importantes:</h3>
+                <ul>
+                    <li>Cuando trabajas dentro de un submodule, estás en un repositorio Git separado. Los cambios deben ser commiteados y pusheados en ese submodule.</li>
+                    <li>El repositorio principal solo rastrea a qué commit del submodule está apuntando.</li>
+                    <li>Si olvidas hacer <span class="code-inline">git submodule update</span> después de un pull en el repo principal, los directorios de los submodules podrían estar vacíos o desactualizados.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 6: PRÁCTICA - Git Submodules con Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 6</div>
+                <h1>PRÁCTICA: Git Submodules con Todo App</h1>
+                <h2>Añadiendo una "Librería de Iconos"</h2>
+            </div>
+        
+            <div class="practice-box">
+                <h3><span class="emoji">🎯</span> Objetivo del Ejercicio:</h3>
+                <p>Simularemos que queremos usar una "librería de iconos SVG" externa en nuestra Todo App. Esta librería será otro repositorio Git que añadiremos como submodule.</p>
+                <p><strong>Preparación del Instructor:</strong> Crear un repositorio público simple en GitHub (ej. <span class="code-inline">todo-app-icons</span>) con algunos archivos SVG (ej. <span class="code-inline">delete-icon.svg</span>, <span class="code-inline">complete-icon.svg</span>).</p>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos para los Alumnos:</h3>
+                <ol>
+                    <li>
+                        <strong>Navegar a la raíz del proyecto <span class="code-inline">todo-app-curso</span>.</strong>
+                    </li>
+                    <li>
+                        <strong>Añadir el repositorio de iconos como submodule:</strong>
+                        <p>Supongamos que la URL del repo de iconos del instructor es <span class="code-inline">https://github.com/instructor/todo-app-icons.git</span>.</p>
+                        <div class="code-block">
+# Crearemos una carpeta 'assets/icons' para el submodule
+git submodule add https://github.com/instructor/todo-app-icons.git assets/icons
+                        </div>
+                        <p>Observa la creación de <span class="code-inline">.gitmodules</span> y la nueva carpeta <span class="code-inline">assets/icons</span>.</p>
+                    </li>
+                    <li>
+                        <strong>Hacer commit de los cambios del submodule:</strong>
+                        <div class="code-block">
+git status
+# Deberías ver .gitmodules y assets/icons como nuevos/modificados
+git add .gitmodules assets/icons
+git commit -m "feat: add icon library submodule"
+                        </div>
+                    </li>
+                    <li>
+                        <strong>(Opcional) Modificar la Todo App para usar un icono:</strong>
+                        <p>Intenta cambiar el texto "✕" del botón de eliminar por una imagen SVG del submodule.
+                        En <span class="code-inline">script.js</span>, donde se crea el <span class="code-inline">deleteBtn</span>:</p>
+                        <div class="code-block">
+// deleteBtn.textContent = '✕'; // Línea antigua
+const imgDelete = document.createElement('img');
+imgDelete.src = 'assets/icons/delete-icon.svg'; // Asumiendo que existe
+imgDelete.alt = 'Eliminar';
+imgDelete.style.width = '16px'; // Ajustar tamaño
+imgDelete.style.height = '16px';
+deleteBtn.innerHTML = ''; // Limpiar texto si lo había
+deleteBtn.appendChild(imgDelete);
+                        </div>
+                        <p>Luego haz commit de este cambio en <span class="code-inline">script.js</span>.</p>
+                    </li>
+                    <li>
+                        <strong>Simular que otro desarrollador clona el proyecto:</strong>
+                        <p>Si un compañero clonara tu repo ahora, necesitaría inicializar el submodule.</p>
+                        <div class="code-block">
+# Imaginemos que estamos en un nuevo clon:
+# git clone TU_REPO_URL todo-app-otro-clon
+# cd todo-app-otro-clon
+# ls assets/icons # Estará vacío o no existirá el contenido
+git submodule init
+git submodule update
+# ls assets/icons # Ahora debería tener los iconos
+                        </div>
+                         <p>Si ya tienes el repo clonado y alguien más añadió el submodule y lo pusheó, tú harías:</p>
+                         <div class="code-block">
+git pull origin main
+git submodule update --init --recursive
+                         </div>
+                    </li>
+                </ol>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🤔</span> Discusión:</h3>
+                <ul>
+                    <li>¿Qué ventajas e inconvenientes ves en este enfoque para los iconos?</li>
+                    <li>¿Cuándo sería realmente útil un submodule en un proyecto como este? (Quizás para un componente JS complejo y reutilizable).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Git LFS - Introducción -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 7</div>
+                <h1>Git LFS: Manejando Archivos Grandes</h1>
+                <h2>Git Large File Storage</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🐘</span> El Problema: Archivos Grandes en Git</h3>
+                <p>Git no está diseñado para manejar archivos binarios grandes (ej. imágenes, videos, datasets, ejecutables, archivos PSD/AI). Cuando se commitean archivos grandes:</p>
+                <ul>
+                    <li>El repositorio se vuelve enorme muy rápidamente.</li>
+                    <li>Clonar y hacer fetch se vuelve lento.</li>
+                    <li>Cada versión del archivo grande se almacena, consumiendo mucho espacio.</li>
+                </ul>
+            </div>
+
+            <h3><span class="emoji">💡</span> ¿Qué es Git LFS?</h3>
+            <p>Git Large File Storage (LFS) es una extensión de Git desarrollada por GitHub para mejorar el manejo de archivos grandes. Funciona reemplazando los archivos grandes en tu repositorio Git con pequeños archivos de texto (punteros).</p>
+            <p>Los contenidos reales de estos archivos grandes se almacenan en un servidor LFS separado (como los de GitHub, GitLab, Bitbucket, o uno propio).</p>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">⚙️</span> ¿Cómo funciona Git LFS?</h3>
+                <ol>
+                    <li><strong>Rastreo:</strong> Le dices a Git LFS qué tipos de archivos debe rastrear (ej. <span class="code-inline">*.psd</span>, <span class="code-inline">*.mp4</span>). Esto se configura en un archivo <span class="code-inline">.gitattributes</span>.</li>
+                    <li><strong>Commit:</strong> Cuando haces commit de un archivo rastreado por LFS, Git LFS intercepta el archivo. En lugar de añadir el archivo grande al repositorio Git, añade un pequeño archivo puntero. Este puntero contiene información como el hash SHA-256 del archivo grande y su tamaño.</li>
+                    <li><strong>Push:</strong> Cuando haces <span class="code-inline">git push</span>, los archivos grandes reales se suben al servidor LFS asociado con tu repositorio remoto. Los archivos puntero se suben al repositorio Git como de costumbre.</li>
+                    <li><strong>Checkout/Pull:</strong> Cuando haces checkout de una rama o pull de cambios, Git LFS usa los archivos puntero para descargar los archivos grandes correspondientes desde el servidor LFS a tu directorio de trabajo.</li>
+                </ol>
+                 <div class="git-flow-diagram" style="text-align: left; font-size: 0.9em;">
+Tu Repositorio Git:
+  archivo_pequeno.txt (contenido real)
+  imagen_grande.png   (archivo puntero LFS, ~1KB)
+  .gitattributes      (define qué archivos son LFS)
+
+Servidor Remoto LFS:
+  imagen_grande.png   (contenido real del archivo, ej. 50MB)
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Git LFS - Instalación, Configuración y Comandos -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 8</div>
+                <h1>Git LFS: Instalación, Configuración y Comandos</h1>
+                <h2>Poniendo en Práctica Git LFS</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">📥</span> Instalación de Git LFS:</h3>
+                <p>Git LFS es un cliente de línea de comandos que debes instalar por separado.</p>
+                <ul>
+                    <li><strong>macOS:</strong> <span class="code-inline">brew install git-lfs</span></li>
+                    <li><strong>Windows:</strong> Descargar el instalador de <a href="https://git-lfs.github.com/" target="_blank">git-lfs.github.com</a> o usar un gestor de paquetes como Chocolatey (<span class="code-inline">choco install git-lfs</span>).</li>
+                    <li><strong>Linux:</strong> Usar el gestor de paquetes de tu distribución (ej. <span class="code-inline">sudo apt-get install git-lfs</span> para Debian/Ubuntu).</li>
+                </ul>
+                <p>Después de instalar, debes inicializar Git LFS para tu usuario (solo una vez):</p>
+                <div class="code-block">git lfs install</div>
+                <p>Y para cada repositorio donde quieras usar LFS (se modifica <span class="code-inline">.git/config</span>):</p>
+                <div class="code-block">git lfs install # (dentro del repo) o git lfs install --system</div>
+            </div>
+
+            <h3><span class="emoji">⚙️</span> Configurar Archivos para Rastreo LFS:</h3>
+            <p>Usa <span class="code-inline">git lfs track</span> para especificar qué archivos o patrones de archivo deben ser manejados por LFS. Esto crea o modifica el archivo <span class="code-inline">.gitattributes</span>.</p>
+            <div class="code-block">
+# Rastrear todos los archivos .psd
+git lfs track "*.psd"
+
+# Rastrear todos los archivos en un directorio específico
+git lfs track "assets/videos/*"
+
+# Rastrear un archivo específico
+git lfs track "data/large_dataset.csv"
+            </div>
+            <p><strong>Importante:</strong> Debes hacer commit del archivo <span class="code-inline">.gitattributes</span> a tu repositorio.</p>
+            <div class="code-block">
+git add .gitattributes
+git commit -m "docs: configure LFS tracking for PSD and video files"
+            </div>
+
+            <h3><span class="emoji">⌨️</span> Comandos Comunes de Git LFS:</h3>
+            <ul>
+                <li><span class="code-inline">git lfs status</span>: Muestra el estado de los archivos LFS.</li>
+                <li><span class="code-inline">git lfs ls-files</span>: Lista los archivos rastreados por LFS en el commit actual.</li>
+                <li><span class="code-inline">git add <archivo_grande></span>: Funciona como siempre, LFS lo intercepta si está rastreado.</li>
+                <li><span class="code-inline">git commit -m "..."</span>: Funciona como siempre.</li>
+                <li><span class="code-inline">git push origin main</span>: Sube los punteros al repo Git y los archivos grandes al servidor LFS.</li>
+                <li><span class="code-inline">git lfs pull</span>: Descarga los archivos LFS que faltan para el commit actual. (Normalmente <span class="code-inline">git pull</span> se encarga de esto si LFS está bien configurado).</li>
+                <li><span class="code-inline">git lfs clone <url></span>: Clona el repositorio y descarga los archivos LFS. (Equivalente a <span class="code-inline">git clone</span> seguido de <span class="code-inline">git lfs pull</span>).</li>
+                <li><span class="code-inline">git lfs untrack "*.psd"</span>: Deja de rastrear archivos .psd con LFS (no afecta archivos ya commiteados).</li>
+                <li><span class="code-inline">git lfs migrate</span>: Herramienta poderosa para reescribir el historial y mover archivos grandes existentes a LFS (usar con precaución).</li>
+            </ul>
+        </div>
+
+        <!-- Slide 9: PRÁCTICA - Git LFS con Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 9</div>
+                <h1>PRÁCTICA: Git LFS con Todo App</h1>
+                <h2>Añadiendo un "Logo Grande" al Proyecto</h2>
+            </div>
+        
+            <div class="practice-box">
+                <h3><span class="emoji">🎯</span> Objetivo del Ejercicio:</h3>
+                <p>Simularemos que queremos añadir un archivo de logo de alta resolución (ej. un <span class="code-inline">.png</span> grande o un <span class="code-inline">.psd</span>) a nuestra Todo App, y lo gestionaremos con Git LFS.</p>
+                <p><strong>Preparación:</strong> Los alumnos necesitarán tener Git LFS instalado (<span class="code-inline">git lfs install --system</span>). Deben encontrar o crear un archivo de imagen relativamente grande (ej. > 1MB). Un simple screenshot guardado como PNG puede servir si es lo suficientemente grande, o un PSD de ejemplo.</p>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos para los Alumnos:</h3>
+                <ol>
+                    <li>
+                        <strong>Asegurarse que Git LFS está instalado en el repositorio:</strong>
+                        <div class="code-block">
+# Dentro de la raíz de tu proyecto todo-app-curso
+git lfs install
+# Debería decir "Git LFS initialized." o "Git LFS already initialized."
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Elegir (o crear) un archivo de imagen grande.</strong>
+                        <p>Por ejemplo, llamémoslo <span class="code-inline">logo-hd.png</span> y colócalo en una nueva carpeta <span class="code-inline">assets/images/</span>.</p>
+                    </li>
+                    <li>
+                        <strong>Rastrear el tipo de archivo con LFS:</strong>
+                        <p>Vamos a rastrear todos los archivos <span class="code-inline">.png</span> dentro de <span class="code-inline">assets/images/</span>.</p>
+                        <div class="code-block">
+git lfs track "assets/images/*.png"
+                        </div>
+                        <p>Verifica que se ha creado o modificado el archivo <span class="code-inline">.gitattributes</span>.</p>
+                    </li>
+                    <li>
+                        <strong>Añadir <span class="code-inline">.gitattributes</span> al staging area:</strong>
+                        <div class="code-block">git add .gitattributes</div>
+                    </li>
+                    <li>
+                        <strong>Añadir el archivo de imagen grande al staging area:</strong>
+                        <div class="code-block">git add assets/images/logo-hd.png</div>
+                    </li>
+                    <li>
+                        <strong>Hacer commit de los cambios:</strong>
+                        <div class="code-block">
+git status 
+# Deberías ver .gitattributes y assets/images/logo-hd.png listos para commit.
+# Si miras el tipo de assets/images/logo-hd.png, Git lo ve como un puntero LFS.
+git commit -m "feat: add HD logo using LFS and configure LFS tracking"
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Subir los cambios a GitHub:</strong>
+                        <div class="code-block">git push origin main # o tu rama feature</div>
+                        <p>Observa la salida. Deberías ver mensajes indicando que LFS está subiendo el objeto grande.</p>
+                        <div class="code-block">
+# Ejemplo de salida LFS:
+# LFS: Uploading LFS objects: 100% (1/1), 2 MB | 0 B/s, done.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Verificar en GitHub:</strong>
+                        <p>Navega al archivo <span class="code-inline">assets/images/logo-hd.png</span> en GitHub. En lugar de mostrar la imagen directamente (si es muy grande para el visor de GitHub), verás que indica que está almacenado con Git LFS y mostrará el puntero.</p>
+                    </li>
+                </ol>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🤔</span> Discusión:</h3>
+                <ul>
+                    <li>¿Cómo cambiaría el tamaño del repositorio si no usáramos LFS para este archivo?</li>
+                    <li>¿Qué pasaría si varios desarrolladores modifican el mismo archivo PSD grande sin LFS File Locking?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Git LFS - Consideraciones y Mejores Prácticas (Repetida para mantener numeración, renombrar si es necesario) -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 10</div>
+                <h1>Git LFS: Consideraciones Adicionales</h1>
+                <h2>Usando LFS Efectivamente</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🤔</span> ¿Qué Archivos Deberían Ir a LFS?</h3>
+                <ul>
+                    <li><strong>Archivos Binarios Grandes:</strong> Imágenes de alta resolución (PSD, RAW, TIFF), videos, audio, modelos 3D, assets de juegos, datasets grandes.</li>
+                    <li><strong>Archivos que no se benefician del diff de Git:</strong> Git es bueno para diffs de texto. Los binarios suelen cambiar completamente con cada modificación.</li>
+                    <li><strong>Archivos que no necesitan versionado línea por línea:</strong> Solo necesitas la versión completa del archivo.</li>
+                </ul>
+                <p>Generalmente, archivos de texto (código fuente, Markdown, JSON, XML, etc.) NO deben ir a LFS, incluso si son grandes, ya que Git los maneja bien.</p>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">💡</span> Mejores Prácticas:</h3>
+                <ul>
+                    <li><strong>Configura LFS al inicio del proyecto:</strong> Es más fácil que migrar un repositorio existente.</li>
+                    <li><strong>Sé específico con <span class="code-inline">.gitattributes</span>:</strong> No rastrees archivos innecesariamente.</li>
+                    <li><strong>Educa a tu equipo:</strong> Asegúrate de que todos tengan LFS instalado y entiendan cómo funciona.</li>
+                    <li><strong>Considera el almacenamiento y ancho de banda LFS:</strong> Plataformas como GitHub tienen cuotas gratuitas y luego cobran por almacenamiento/transferencia LFS adicional.</li>
+                    <li><strong>Bloqueo de Archivos LFS (File Locking):</strong> Para archivos binarios que no se pueden mergear (ej. un archivo de diseño), LFS ofrece bloqueo de archivos para evitar que dos personas editen el mismo archivo simultáneamente. <span class="code-inline">git lfs lock "design.psd"</span>.</li>
+                    <li><strong>No commitear archivos generados que son grandes:</strong> Si un build produce un ejecutable grande, considera si realmente necesita estar en LFS o si debería ser un artefacto de CI.</li>
+                </ul>
+            </div>
+        
+            <div class="practice-box">
+                <h3><span class="emoji">💰</span> Almacenamiento y Ancho de Banda LFS en GitHub:</h3>
+                <p>Para cuentas gratuitas de GitHub:</p>
+                <ul>
+                    <li><strong>Almacenamiento LFS:</strong> 1 GB gratuito.</li>
+                    <li><strong>Ancho de Banda LFS:</strong> 1 GB gratuito por mes.</li>
+                </ul>
+                <p>Se pueden comprar paquetes de datos adicionales si se superan estos límites. Es importante monitorizar el uso en proyectos grandes.</p>
+                <p>Otras plataformas (GitLab, Bitbucket) tienen sus propias políticas de LFS.</p>
+            </div>
+             <p>Git LFS es una herramienta poderosa, pero úsala conscientemente para los tipos de archivo correctos para evitar costos inesperados o complejidad innecesaria.</p>
+        </div>
+
+        <!-- Slide 11: CI/CD - Introducción -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 11</div>
+                <h1>Introducción a CI/CD</h1>
+                <h2>Automatizando el Ciclo de Vida del Software</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🤖</span> ¿Qué es CI/CD?</h3>
+                <p>CI/CD es una práctica fundamental en DevOps que combina la Integración Continua (CI) y la Entrega Continua o Despliegue Continuo (CD) para automatizar gran parte del ciclo de vida del desarrollo de software.</p>
+            </div>
+            
+            <div class="flex-container">
+                <div class="flex-item theory-box">
+                    <h3><span class="emoji">🔄</span> Integración Continua (CI - Continuous Integration)</h3>
+                    <p>Es la práctica de fusionar automáticamente los cambios de código de múltiples desarrolladores en un repositorio central varias veces al día.</p>
+                    <h4>Objetivos de CI:</h4>
+                    <ul>
+                        <li>Detectar errores de integración temprana y frecuentemente.</li>
+                        <li>Automatizar la compilación del software.</li>
+                        <li>Ejecutar pruebas automatizadas (unitarias, de integración) con cada cambio.</li>
+                        <li>Proporcionar feedback rápido a los desarrolladores.</li>
+                    </ul>
+                    <h4>Pasos Típicos en un Proceso de CI:</h4>
+                    <ol>
+                        <li>Desarrollador hace push de cambios a una rama.</li>
+                        <li>Servidor de CI detecta los cambios.</li>
+                        <li>Clona el código.</li>
+                        <li>Compila el proyecto.</li>
+                        <li>Ejecuta pruebas.</li>
+                        <li>Genera un reporte.</li>
+                        <li>Notifica al equipo del resultado.</li>
+                    </ol>
+                </div>
+
+                <div class="flex-item theory-box">
+                    <h3><span class="emoji">🚀</span> Entrega/Despliegue Continuo (CD - Continuous Delivery/Deployment)</h3>
+                    <p><strong>Entrega Continua (Continuous Delivery):</strong> Extiende la CI asegurando que el software pueda ser liberado a producción en cualquier momento. Después de las pruebas de CI, el software se empaqueta y se puede desplegar a un entorno de staging o producción con un clic.</p>
+                    <p><strong>Despliegue Continuo (Continuous Deployment):</strong> Va un paso más allá. Cada cambio que pasa todas las etapas de CI y CD se despliega automáticamente a producción.</p>
+                    <h4>Objetivos de CD:</h4>
+                    <ul>
+                        <li>Automatizar el proceso de release.</li>
+                        <li>Reducir el riesgo de los despliegues.</li>
+                        <li>Entregar valor a los usuarios más rápidamente.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Beneficios de CI/CD:</h3>
+                <ul>
+                    <li><strong>Releases más rápidas y frecuentes:</strong> Permite entregar nuevas features y correcciones a los usuarios más rápido.</li>
+                    <li><strong>Mayor calidad del código:</strong> Pruebas automatizadas detectan bugs antes.</li>
+                    <li><strong>Reducción de riesgos:</strong> Despliegues pequeños y frecuentes son menos riesgosos que grandes despliegues infrecuentes.</li>
+                    <li><strong>Feedback más rápido:</strong> Los desarrolladores saben rápidamente si sus cambios rompieron algo.</li>
+                    <li><strong>Mayor productividad:</strong> Menos tiempo dedicado a procesos manuales de build y deploy.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: GitHub Actions - Introducción -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 12</div>
+                <h1>GitHub Actions: CI/CD Integrado en GitHub</h1>
+                <h2>Automatizando Flujos de Trabajo</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🛠️</span> ¿Qué es GitHub Actions?</h3>
+                <p>GitHub Actions es una plataforma de CI/CD integrada directamente en GitHub. Permite automatizar flujos de trabajo de desarrollo de software directamente desde tu repositorio.</p>
+                <p>Puedes crear flujos de trabajo personalizados que se ejecutan en respuesta a eventos en GitHub (como push, pull request, creación de issue, release, etc.).</p>
+            </div>
+
+            <h3><span class="emoji">🧩</span> Componentes Clave de GitHub Actions:</h3>
+            <ul>
+                <li><strong>Workflows (Flujos de Trabajo):</strong> Procesos automatizados definidos en archivos YAML (ubicados en <span class="code-inline">.github/workflows/</span>). Un repositorio puede tener múltiples workflows.</li>
+                <li><strong>Events (Eventos):</strong> Actividades específicas que disparan un workflow (ej. <span class="code-inline">on: push</span>, <span class="code-inline">on: pull_request</span>, <span class="code-inline">on: schedule</span>).</li>
+                <li><strong>Jobs (Trabajos):</strong> Un conjunto de pasos que se ejecutan en un mismo runner (máquina virtual). Los jobs pueden ejecutarse en paralelo o secuencialmente.</li>
+                <li><strong>Steps (Pasos):</strong> Tareas individuales dentro de un job. Un paso puede ser ejecutar un comando de shell o usar una "action".</li>
+                <li><strong>Actions (Acciones):</strong> Piezas de código reutilizables que realizan tareas complejas. Hay actions creadas por GitHub (ej. <span class="code-inline">actions/checkout@v3</span>), de la comunidad (en el Marketplace), o puedes crear las tuyas.</li>
+                <li><strong>Runners (Ejecutores):</strong> Servidores que ejecutan tus workflows. GitHub provee runners hospedados (Linux, Windows, macOS), o puedes configurar tus propios self-hosted runners.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">📁</span> Estructura de un Archivo de Workflow:</h3>
+                <p>Los workflows se definen en archivos YAML en el directorio <span class="code-inline">.github/workflows/</span> de tu repositorio. Ejemplo: <span class="code-inline">.github/workflows/ci.yml</span></p>
+                <div class="code-block">
+name: Node.js CI  # Nombre del workflow (opcional, se muestra en GitHub)
+
+on: [push, pull_request] # Eventos que disparan el workflow
+
+jobs:
+  build: # Nombre del job
+    runs-on: ubuntu-latest # Tipo de runner
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x] # Ejecutar para múltiples versiones de Node
+
+    steps:
+    - name: Checkout repository # Nombre del paso
+      uses: actions/checkout@v4 # Usa una action predefinida
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm ci # Comando de shell
+
+    - name: Run tests
+      run: npm test
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: GitHub Actions - Workflow Básico de CI para Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 13</div>
+                <h1>GitHub Actions: Workflow Básico de CI para Todo App</h1>
+                <h2>Verificaciones Simples en Nuestro Proyecto</h2>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🎯</span> Objetivo del Workflow de CI:</h3>
+                <p>Para nuestra Todo App (HTML, CSS, JS puro), un workflow de CI simple podría incluir:</p>
+                <ul>
+                    <li>Verificar que el código existe y tiene una estructura básica.</li>
+                    <li>(Opcional Avanzado) Ejecutar un linter para JavaScript y CSS si lo configuramos.</li>
+                    <li>(Opcional Avanzado) Ejecutar pruebas unitarias si las tuviéramos.</li>
+                </ul>
+                <p>Crearemos un archivo <span class="code-inline">.github/workflows/ci-checks.yml</span>.</p>
+            </div>
+
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Ejemplo de <span class="code-inline">.github/workflows/ci-checks.yml</span>:</h3>
+                <div class="code-block">
+name: Todo App Basic CI Checks
+
+on:
+  push:
+    branches: [ "**" ] # Todas las ramas, incluyendo main
+  pull_request:
+    branches: [ main ] # En PRs dirigidos a main
+
+jobs:
+  basic-validation: 
+    name: Basic File and Structure Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for essential files
+        run: |
+          if [ ! -f index.html ]; then echo "Error: index.html no encontrado." && exit 1; fi
+          if [ ! -f style.css ]; then echo "Error: style.css no encontrado." && exit 1; fi
+          if [ ! -f script.js ]; then echo "Error: script.js no encontrado." && exit 1; fi
+          echo "Archivos esenciales encontrados."
+
+      - name: Basic HTML Doctype and Tag Check
+        run: |
+          echo "Realizando validación HTML básica en index.html..."
+          grep -q -i "<!DOCTYPE html>" index.html || (echo "Error: DOCTYPE no encontrado o incorrecto." && exit 1)
+          grep -q "<html" index.html || (echo "Error: Etiqueta <html> no encontrada." && exit 1)
+          grep -q "</html>" index.html || (echo "Error: Etiqueta de cierre </html> no encontrada." && exit 1)
+          grep -q "<head>" index.html || (echo "Error: Etiqueta <head> no encontrada." && exit 1)
+          grep -q "</head>" index.html || (echo "Error: Etiqueta de cierre </head> no encontrada." && exit 1)
+          grep -q "<body>" index.html || (echo "Error: Etiqueta <body> no encontrada." && exit 1)
+          grep -q "</body>" index.html || (echo "Error: Etiqueta de cierre </body> no encontrada." && exit 1)
+          echo "Validación HTML básica completada exitosamente."
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3><span class="emoji">🔍</span> Explicación:</h3>
+                <ul>
+                    <li>Este workflow se dispara en cada <span class="code-inline">push</span> a cualquier rama y en <span class="code-inline">pull_request</span> a <span class="code-inline">main</span>.</li>
+                    <li>El job <span class="code-inline">basic-validation</span> se ejecuta en un runner de Ubuntu.</li>
+                    <li>El primer paso (<span class="code-inline">actions/checkout@v4</span>) clona el código.</li>
+                    <li>El segundo paso verifica la existencia de los archivos principales de nuestra Todo App.</li>
+                    <li>El tercer paso realiza comprobaciones muy básicas de la estructura HTML en <span class="code-inline">index.html</span> usando <span class="code-inline">grep</span>. Si alguna comprobación falla, el comando <span class="code-inline">exit 1</span> hace que el paso (y el job) falle.</li>
+                </ul>
+                <p>Al hacer push de este archivo a GitHub, podrás ver las ejecuciones en la pestaña "Actions" de tu repositorio.</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: GitHub Actions - Comprobaciones en Pull Requests -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 14</div>
+                <h1>GitHub Actions: Verificaciones en Pull Requests</h1>
+                <h2>Asegurando la Calidad Antes del Merge</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🎯</span> Objetivo:</h3>
+                <p>El workflow anterior (<span class="code-inline">ci-checks.yml</span>) ya se ejecuta en Pull Requests dirigidos a <span class="code-inline">main</span>. GitHub Actions mostrará el estado de estos checks directamente en la página del Pull Request.</p>
+                <p>Podemos configurar "Reglas de Protección de Rama" (Branch Protection Rules) en GitHub para <span class="code-inline">main</span>, exigiendo que ciertos checks pasen antes de que se permita el merge de un PR.</p>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Configurando Reglas de Protección de Rama (Branch Protection Rules):</h3>
+                <ol>
+                    <li>Ve a tu repositorio en GitHub.</li>
+                    <li>Settings → Branches.</li>
+                    <li>En "Branch protection rules", haz clic en "Add rule".</li>
+                    <li><strong>Branch name pattern:</strong> Escribe <span class="code-inline">main</span>.</li>
+                    <li>Marca la casilla "Require status checks to pass before merging".
+                        <ul>
+                            <li>Si tu workflow ya se ha ejecutado al menos una vez, el nombre del job (ej. "Basic File and Structure Validation") debería aparecer en la lista de "Status checks that are required". Selecciónalo.</li>
+                            <li>Si no aparece, puede que necesites hacer un push y esperar a que el workflow se ejecute primero.</li>
+                        </ul>
+                    </li>
+                    <li>(Opcional) Puedes marcar "Require pull request reviews before merging" para exigir revisiones.</li>
+                    <li>(Opcional) Puedes marcar "Include administrators" para que estas reglas también apliquen a los administradores del repositorio.</li>
+                    <li>Haz clic en "Create".</li>
+                </ol>
+                <p>Ahora, si un PR a <span class="code-inline">main</span> tiene checks fallidos (según lo configurado), el botón de merge estará deshabilitado hasta que los checks pasen.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3><span class="emoji">✨</span> Beneficios Adicionales para PRs:</h3>
+                <ul>
+                    <li><strong>Feedback Visual Directo:</strong> El estado (pasando/fallando) de los workflows se muestra en el PR.</li>
+                    <li><strong>Bloqueo de Merge:</strong> Previene que se integre código que no cumple los criterios de CI.</li>
+                    <li><strong>Confianza:</strong> Aumenta la confianza en que el código que se está mergeando es de buena calidad.</li>
+                    <li><strong>Iteración:</strong> Si un check falla, el desarrollador puede hacer push de correcciones a su rama, y el workflow se volverá a ejecutar en el PR.</li>
+                </ul>
+                 <p>Para nuestro workflow simple, si alguien hace un PR que elimina <span class="code-inline">index.html</span> o borra el <span class="code-inline"><!DOCTYPE html></span>, el check fallará y (con la regla de protección) bloqueará el merge.</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: GitHub Actions - Despliegue a GitHub Pages -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 15</div>
+                <h1>GitHub Actions: Despliegue Continuo a GitHub Pages</h1>
+                <h2>Automatizando la Publicación de Nuestra Todo App</h2>
+            </div>
+        
+            <div class="theory-box">
+                <h3><span class="emoji">🚀</span> Objetivo:</h3>
+                <p>Automatizar el despliegue de nuestra Todo App (que es un sitio estático HTML, CSS, JS) a GitHub Pages cada vez que se haga un push exitoso (o se mergée un PR) a la rama <span class="code-inline">main</span>.</p>
+            </div>
+        
+            <div class="instructor-demo">
+                <h3><span class="emoji">👨‍🏫</span> Creando <span class="code-inline">.github/workflows/deploy-gh-pages.yml</span>:</h3>
+                <div class="code-block">
+name: Deploy Todo App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Disparar solo en pushes a la rama main
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+
+    # Permisos necesarios para que la action pueda escribir en GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # Configurar el entorno de despliegue (opcional pero buena práctica)
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # URL de la página desplegada
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # (Opcional) Si tuviéramos un paso de build (ej. para minificar JS/CSS)
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      # - name: Install dependencies and build
+      #   run: |
+      #     npm ci
+      #     npm run build # Asumiendo que el build output va a una carpeta 'dist' o 'build'
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Para nuestro proyecto simple, es la raíz del repositorio.
+          # Si tuvieras un paso de build, esta sería la carpeta de output (ej. './dist')
+          path: '.' 
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3><span class="emoji">⚙️</span> Configuración Adicional en el Repositorio:</h3>
+                <ol>
+                    <li>Ve a tu repositorio en GitHub.</li>
+                    <li>Settings → Pages.</li>
+                    <li>En "Build and deployment", bajo "Source", selecciona <strong>"GitHub Actions"</strong>. (GitHub puede detectar automáticamente el workflow y configurarlo).</li>
+                </ol>
+                <p>Una vez que este workflow se ejecute exitosamente después de un push a <span class="code-inline">main</span>, tu sitio estará disponible en <span class="code-inline">https://TU_USUARIO.github.io/tu-repositorio/</span>.</p>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🔍</span> Explicación del Workflow:</h3>
+                <ul>
+                    <li><span class="code-inline">permissions</span>: Otorga los permisos necesarios para que las actions puedan desplegar a GitHub Pages. Es crucial para que <span class="code-inline">deploy-pages</span> funcione.</li>
+                    <li><span class="code-inline">environment</span>: Define un entorno de despliegue. GitHub lo usa para rastrear despliegues y mostrar la URL.</li>
+                    <li><span class="code-inline">actions/configure-pages@v4</span>: Prepara el entorno para el despliegue a GitHub Pages.</li>
+                    <li><span class="code-inline">actions/upload-pages-artifact@v3</span>: Empaqueta los archivos de tu sitio (desde <span class="code-inline">path: '.'</span>, que es la raíz del proyecto en este caso) y los sube como un artefacto llamado <span class="code-inline">github-pages</span>.</li>
+                    <li><span class="code-inline">actions/deploy-pages@v4</span>: Toma el artefacto subido y lo despliega a GitHub Pages. La <span class="code-inline">id: deployment</span> permite referenciar su output (<span class="code-inline">steps.deployment.outputs.page_url</span>).</li>
+                </ul>
+                 <p>Con esto, cada vez que el código en <span class="code-inline">main</span> cambie, la Todo App se actualizará automáticamente en GitHub Pages.</p>
+            </div>
+        </div>
+
+        <!-- Slide 16: PRÁCTICA - GitHub Actions para Todo App -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 16</div>
+                <h1>PRÁCTICA: GitHub Actions para Todo App</h1>
+                <h2>Implementando CI y Despliegue</h2>
+            </div>
+        
+            <div class="practice-box">
+                <h3><span class="emoji">🎯</span> Objetivo del Ejercicio:</h3>
+                <p>Implementar los workflows de CI y despliegue a GitHub Pages que vimos en las diapositivas anteriores para nuestra Todo App.</p>
+            </div>
+        
+            <div class="student-exercise">
+                <h3><span class="emoji">🧑‍💻</span> Pasos para los Alumnos:</h3>
+                <ol>
+                    <li>
+                        <strong>Crear el workflow de CI (<span class="code-inline">ci-checks.yml</span>):</strong>
+                        <ul>
+                            <li>En tu repositorio local, crea la estructura de directorios: <span class="code-inline">.github/workflows/</span> (asegúrate de que el directorio <span class="code-inline">.github</span> comienza con un punto).</li>
+                            <li>Dentro de <span class="code-inline">.github/workflows/</span>, crea un archivo llamado <span class="code-inline">ci-checks.yml</span>.</li>
+                            <li>Copia el contenido del workflow de la Diapositiva 13 en este archivo.</li>
+                            <li>Haz commit y push de este archivo a tu rama (ej. <span class="code-inline">main</span> o una nueva rama <span class="code-inline">feature/setup-ci</span>).</li>
+                            <div class="code-block">
+git add .github/workflows/ci-checks.yml
+git commit -m "ci: add basic CI checks workflow"
+git push origin tu-rama
+                            </div>
+                            <li>Observa la pestaña "Actions" en GitHub. Deberías ver tu workflow ejecutándose.</li>
+                            <li>(Opcional) Crea un PR con este cambio para ver los checks en acción.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Crear el workflow de Despliegue (<span class="code-inline">deploy-gh-pages.yml</span>):</strong>
+                        <ul>
+                            <li>En el mismo directorio <span class="code-inline">.github/workflows/</span>, crea un archivo llamado <span class="code-inline">deploy-gh-pages.yml</span>.</li>
+                            <li>Copia el contenido del workflow de la Diapositiva 15 en este archivo.</li>
+                            <li>Haz commit y push de este archivo a tu rama <span class="code-inline">main</span> (este workflow se dispara en push a <span class="code-inline">main</span>).</li>
+                             <div class="code-block">
+git add .github/workflows/deploy-gh-pages.yml
+git commit -m "ci: add workflow to deploy to GitHub Pages"
+git push origin main
+                            </div>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Configurar GitHub Pages en el Repositorio:</strong>
+                        <ul>
+                            <li>Sigue los pasos de la Diapositiva 15: Ve a Settings → Pages y selecciona "GitHub Actions" como la fuente de despliegue.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Verificar el Despliegue:</strong>
+                        <ul>
+                            <li>Después de que el workflow <span class="code-inline">deploy-gh-pages.yml</span> se ejecute exitosamente en la rama <span class="code-inline">main</span>, ve a la URL de GitHub Pages de tu repositorio (ej. <span class="code-inline">https://TU_USUARIO.github.io/todo-app-curso/</span>).</li>
+                            <li>Tu Todo App debería estar visible.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Probar el flujo completo:</strong>
+                        <ul>
+                            <li>Haz un cambio pequeño en <span class="code-inline">index.html</span> (ej. cambia un texto).</li>
+                            <li>Haz commit y push a <span class="code-inline">main</span>.</li>
+                            <li>Observa cómo se dispara el workflow de CI y luego el de despliegue.</li>
+                            <li>Verifica que tu cambio aparece en el sitio de GitHub Pages después de unos momentos.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        
+            <div class="highlight-box">
+                <h3><span class="emoji">🎉</span> ¡Felicidades!</h3>
+                <p>Has configurado un pipeline básico de CI/CD para tu proyecto. Ahora tienes verificaciones automáticas y despliegues automáticos a GitHub Pages.</p>
+            </div>
+        </div>
+
+
+        <!-- Slide 17: Conclusión Día 2 y Próximos Pasos -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">Diapositiva 17</div>
+                <h1>Conclusión Día 2 y Próximos Pasos</h1>
+                <h2>Dominando Flujos de Trabajo y Automatización</h2>
+            </div>
+
+            <div class="highlight-box">
+                <h3><span class="emoji">🎉</span> ¡Hemos Cubierto Mucho Terreno!</h3>
+                <p>En este Día 2, hemos explorado:</p>
+                <ul>
+                    <li><strong>Git Flow:</strong> Una estrategia robusta para la gestión de ramas en proyectos complejos.</li>
+                    <li><strong>Git Submodules:</strong> Cómo incorporar y gestionar dependencias de repositorios externos (¡con práctica!).</li>
+                    <li><strong>Git LFS:</strong> La solución para manejar archivos binarios grandes de manera eficiente en Git (¡con práctica!).</li>
+                    <li><strong>CI/CD:</strong> Los principios de Integración y Entrega/Despliegue Continuo.</li>
+                    <li><strong>GitHub Actions:</strong> Cómo implementar CI/CD directamente en GitHub para automatizar pruebas, builds y despliegues de nuestra Todo App (¡con práctica!).</li>
+                </ul>
+            </div>
+
+            <div class="theory-box">
+                <h3><span class="emoji">🚀</span> ¿Qué Sigue? Práctica y Exploración:</h3>
+                <ul>
+                    <li><strong>Experimenta con Git Flow:</strong> Intenta aplicar Git Flow en un proyecto personal (incluso uno pequeño) para familiarizarte con sus ramas.</li>
+                    <li><strong>Prueba Submodules y LFS:</strong> Si tienes un proyecto con dependencias externas o archivos grandes, intenta integrarlos usando estas herramientas.</li>
+                    <li><strong>Profundiza en GitHub Actions:</strong>
+                        <ul>
+                            <li>Explora el <a href="https://github.com/marketplace?type=actions" target="_blank">Marketplace de GitHub Actions</a> para descubrir miles de actions reutilizables.</li>
+                            <li>Intenta añadir más pasos a tus workflows: linters más específicos (ESLint, Stylelint), formateadores (Prettier), herramientas de testing (Jest, Mocha, Cypress).</li>
+                            <li>Aprende sobre <a href="https://docs.github.com/en/actions/learn-github-actions/contexts" target="_blank">Contextos</a> y <a href="https://docs.github.com/en/actions/learn-github-actions/expressions" target="_blank">Expresiones</a> para workflows más dinámicos.</li>
+                            <li>Investiga sobre <a href="https://docs.github.com/en/actions/security-guides/encrypted-secrets" target="_blank">Secrets</a> para manejar información sensible en tus workflows (ej. API keys para despliegues a otros servicios).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Contribuye a Proyectos Open Source:</strong> Muchos utilizan estas herramientas y flujos de trabajo. Es una excelente manera de aprender.</li>
+                </ul>
+            </div>
+
+            <div class="practice-box">
+                <h3><span class="emoji">💡</span> Reflexión Final:</h3>
+                <p>El control de versiones con Git y las herramientas de colaboración y automatización como GitHub son fundamentales en el desarrollo de software moderno. Dominar estos conceptos no solo te hace un desarrollador más eficiente, sino también un mejor colaborador en equipo.</p>
+                <p><strong>¡Sigue practicando, sigue construyendo y sigue aprendiendo!</strong></p>
+            </div>
+            
+            <p style="text-align:center; margin-top: 30px; font-weight: bold;">¡Gracias por participar en el curso!</p>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <div class="keyboard-shortcut">
+        <div>Navegación:</div>
+        <div>← → : Cambiar slides</div>
+        <div>F : Pantalla completa</div>
+        <div>Esc : Salir pantalla completa</div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length; // Se actualizará a 17
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            slides[currentSlide].scrollTop = 0;
+        }
+
+        function changeSlide(n) {
+            if (currentSlide + n >= 0 && currentSlide + n < totalSlides) {
+                showSlide(currentSlide + n);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        changeSlide(-1);
+                    }
+                    break;
+                case 'ArrowRight':
+                     if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        changeSlide(1);
+                    }
+                    break;
+                case 'f':
+                case 'F':
+                    if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            document.documentElement.requestFullscreen();
+                        }
+                    }
+                    break;
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    break;
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    changeSlide(1);
+                } else {
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        showSlide(0);
+
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('gitCourseSlide_Day2_v2', currentSlide); // Nueva clave para esta versión
+        });
+
+        window.addEventListener('load', function() {
+            const savedSlide = localStorage.getItem('gitCourseSlide_Day2_v2'); // Usar nueva clave
+            if (savedSlide !== null && !isNaN(savedSlide) && parseInt(savedSlide) < totalSlides && parseInt(savedSlide) >=0) {
+                showSlide(parseInt(savedSlide));
+            } else {
+                showSlide(0);
+            }
+        });
+    </script>
+</body>
+</html>
