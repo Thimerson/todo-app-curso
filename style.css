@@ -85,10 +85,35 @@ h1 {
     padding: 4px 8px;
     cursor: pointer;
     font-size: 14px;
+    transition: all 0.2s ease;
+    opacity: 0.8;
 }
 
 .delete-btn:hover {
     background: #c82333;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.delete-btn:active {
+    transform: scale(0.95);
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+    transition: all 0.2s ease;
+}
+
+.task-item:hover {
+    background: #f1f1f1;
+    border-left-color: #0056b3;
 }
 
 .filters {
